@@ -9,25 +9,22 @@ function Dashboard() {
   const [serviceFilter, setServiceFilter] = useState('');
   const [locations, setLocations] = useState([]);
   const [services, setServices] = useState([]);
+  const [selectedHospital, setSelectedHospital] = useState(null);
 
-  // Fetch hospital data from the API
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
         const response = await axios.get("http://localhost:3000/api/list-phc");
         const hospitalData = response.data;
 
-        setHospitals(hospitalData); // Set the hospitals data
-        setFilteredHospitals(hospitalData); // Initialize filteredHospitals with all data
+        setHospitals(hospitalData);
+        setFilteredHospitals(hospitalData);
 
-        // Extract unique locations and services
         const uniqueLocations = [...new Set(hospitalData.map(hospital => hospital.location))];
-        const uniqueServices = [
-          ...new Set(hospitalData.flatMap(hospital => hospital.services))
-        ];
+        const uniqueServices = [...new Set(hospitalData.flatMap(hospital => hospital.services))];
 
-        setLocations(uniqueLocations); // Set the unique locations for the dropdown
-        setServices(uniqueServices);   // Set the unique services for the dropdown
+        setLocations(uniqueLocations);
+        setServices(uniqueServices);
       } catch (err) {
         console.error("Error fetching hospitals:", err);
       }
@@ -35,7 +32,6 @@ function Dashboard() {
     fetchHospitals();
   }, []);
 
-  // Handle filter changes
   const handleFilterChange = () => {
     let filteredData = hospitals;
 
@@ -56,80 +52,82 @@ function Dashboard() {
     setFilteredHospitals(filteredData);
   };
 
-  // Handle location filter change
-  const handleLocationChange = (e) => {
-    setLocationFilter(e.target.value);
-  };
-
-  // Handle services filter change
-  const handleServiceChange = (e) => {
-    setServiceFilter(e.target.value);
-  };
-
   return (
     <div className='dashboard-wrapper'>
       <div className='left-section'>
-        <div className="dashboard-container">
+        <div className='dashboard-container'>
           <h2>Hospitals Near You</h2>
 
-          {/* Filter Section */}
-          <div className="filters" style={{ marginTop: "100px" }}>
-            <select
-              className="filter-select"
-              value={locationFilter}
-              onChange={handleLocationChange}
-            >
-              <option value="">Select Location</option>
+          <div className='filters'>
+            <select className='filter-select' value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
+              <option value=''>Select Location</option>
               {locations.map((location, index) => (
-                <option key={index} value={location}>
-                  {location}
-                </option>
+                <option key={index} value={location}>{location}</option>
               ))}
             </select>
 
-            <select
-              className="filter-select"
-              value={serviceFilter}
-              onChange={handleServiceChange}
-            >
-              <option value="">Select Service</option>
+            <select className='filter-select' value={serviceFilter} onChange={(e) => setServiceFilter(e.target.value)}>
+              <option value=''>Select Service</option>
               {services.map((service, index) => (
-                <option key={index} value={service}>
-                  {service}
-                </option>
+                <option key={index} value={service}>{service}</option>
               ))}
             </select>
 
-            <button onClick={handleFilterChange} className="filter-btn">
-              Apply Filters
-            </button>
+            <button onClick={handleFilterChange} className='filter-btn'>Apply Filters</button>
           </div>
 
-          {/* Hospital Cards */}
-          <div className="hospital-cards-container">
+          <div className='hospital-cards-container'>
             {filteredHospitals.map((hospital) => (
-              <div key={hospital.id} className="hospital-card">
-                <img
-                  src="https://img.freepik.com/free-vector/people-walking-sitting-hospital-building-city-clinic-glass-exterior-flat-vector-illustration-medical-help-emergency-architecture-healthcare-concept_74855-10130.jpg"
-                  alt={hospital.name}
-                  className="hospital-image"
+              <div key={hospital._id} className='hospital-card'>
+                <img 
+                  src="https://img.freepik.com/free-vector/people-walking-sitting-hospital-building-city-clinic-glass-exterior-flat-vector-illustration-medical-help-emergency-architecture-healthcare-concept_74855-10130.jpg" 
+                  alt={hospital.name} 
+                  className='hospital-image'
                 />
                 <h3>{hospital.name}</h3>
                 <p>{hospital.location}</p>
-                <p>Services: {hospital.services.join(', ')}</p>
+                <button onClick={() => setSelectedHospital(hospital)}>Read More</button>
               </div>
             ))}
           </div>
         </div>
       </div>
-
-      {/* Right Section */}
+      
       <div className='right-section'>
-        <div className='row' style={{marginTop:"100px" }}>
-          <h1 style={{marginLeft:"90px" }}>Vaccine</h1>
-          <p style={{marginLeft:"99px",marginTop:"50px" }}>comming soon.....</p>
+        <div className='row' style={{ marginTop: "100px" }}>
+          <h1 style={{ marginLeft: "90px" }}>Vaccine</h1>
+          <p style={{ marginLeft: "99px", marginTop: "50px" }}>Coming soon...</p>
         </div>
       </div>
+      
+      {selectedHospital && (
+        <div className='modal-overlay' onClick={() => setSelectedHospital(null)}>
+          <div className='modal-content' onClick={(e) => e.stopPropagation()}>
+            <button className='close-btn' onClick={() => setSelectedHospital(null)}>X</button>
+            <h2>{selectedHospital.name}</h2>
+            <p><strong>Location:</strong> {selectedHospital.location}</p>
+            <p><strong>Type:</strong> {selectedHospital.type}</p>
+            <p><strong>Contact:</strong> {selectedHospital.contact_info}</p>
+            <p><strong>Services:</strong> {selectedHospital.services?.join(', ') || 'N/A'}</p>
+            <p><strong>Facilities:</strong> {selectedHospital.facilities?.join(', ') || 'N/A'}</p>
+            <h3>Doctors Available</h3>
+{selectedHospital.doctors?.length > 0 ? (
+  <ul>
+    {selectedHospital.doctors.map((doctor, index) => (
+      <li key={index}>
+        <strong>{doctor.doctor_name}</strong> - {doctor.specialization}
+        <br />
+        📞 {doctor.phone} | ✉️ {doctor.doctor_email}
+      </li>
+    ))}
+  </ul>
+) : (
+  <p>No doctors available</p>
+)}
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -104,27 +104,36 @@ function Dashboard() {
         <div className='modal-overlay' onClick={() => setSelectedHospital(null)}>
           <div className='modal-content' onClick={(e) => e.stopPropagation()}>
             <button className='close-btn' onClick={() => setSelectedHospital(null)}>X</button>
-            <h2>{selectedHospital.name}</h2>
-            <p><strong>Location:</strong> {selectedHospital.location}</p>
-            <p><strong>Type:</strong> {selectedHospital.type}</p>
-            <p><strong>Contact:</strong> {selectedHospital.contact_info}</p>
-            <p><strong>Services:</strong> {selectedHospital.services?.join(', ') || 'N/A'}</p>
-            <p><strong>Facilities:</strong> {selectedHospital.facilities?.join(', ') || 'N/A'}</p>
-            <h3>Doctors Available</h3>
-{selectedHospital.doctors?.length > 0 ? (
-  <ul>
-    {selectedHospital.doctors.map((doctor, index) => (
-      <li key={index}>
-        <strong>{doctor.doctor_name}</strong> - {doctor.specialization}
-        <br />
-        📞 {doctor.phone} | ✉️ {doctor.doctor_email}
-      </li>
-    ))}
-  </ul>
-) : (
-  <p>No doctors available</p>
-)}
+            <div className='hospital-detail-wrapper'>
+              {/* Left Section: Hospital Details */}
+              <div className='left-sec' style={{marginLeft:"150px"}}>
+                <h2>{selectedHospital.name}</h2>
+                <p style={{padding:"5px"}}><strong>Location:</strong> {selectedHospital.location}</p>
+                <p style={{padding:"5px"}}><strong>Type:</strong> {selectedHospital.type}</p>
+                <p style={{padding:"5px"}}><strong>Contact:</strong> {selectedHospital.contact_info}</p>
+                <p style={{padding:"5px"}}><strong>Services:</strong> {selectedHospital.services?.join(', ') || 'N/A'}</p>
+                <p style={{padding:"5px"}}><strong>Facilities:</strong> {selectedHospital.facilities?.join(', ') || 'N/A'}</p>
+                
+              </div>
 
+              {/* Right Section: Doctors */}
+              <div className='right-sec' style={{border:"1px solid black"}}>
+              <h3 style={{marginTop:"100px"}}>Doctors Available</h3>
+                {selectedHospital.doctors?.length > 0 ? (
+                  <ul style={{marginTop:"10px"}}>
+                    {selectedHospital.doctors.map((doctor, index) => (
+                      <li key={index} style={{listStyle:"none"}}>
+                        <strong>{doctor.doctor_name}</strong> - {doctor.specialization}
+                        <br />
+                        📞 {doctor.phone} | ✉️ {doctor.doctor_email}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No doctors available</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

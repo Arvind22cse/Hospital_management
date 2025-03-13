@@ -6,7 +6,11 @@ const attendanceModel = require("../model/attendance.model.js");
 // Mark Attendance (Check-in)
 const markAttendance = async (req, res) => {
   try {
-    const doctorId = req.session.doctorId; // Get doctorId from session
+    if (!req.body.doctorId) {
+        return res.status(401).json({ message: "Unauthorized. Please log in." });
+    }
+
+    const doctorId = req.session.doctorId || req.body.doctorId; // Get doctorId from session
     const date = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
     const check_in = new Date().toLocaleTimeString(); // Current Time
 
@@ -27,10 +31,12 @@ const markAttendance = async (req, res) => {
   }
 };
 
+
+
 // Mark Check-out
 const markCheckOut = async (req, res) => {
   try {
-    const doctorId = req.session.doctorId;
+    const doctorId = req.session.doctorId || req.body.doctorId;
     const date = new Date().toISOString().split("T")[0];
     const check_out = new Date().toLocaleTimeString();
 
@@ -53,7 +59,7 @@ const markCheckOut = async (req, res) => {
 // Get Doctor Attendance with Filtering
 const getDoctorAttendance = async (req, res) => {
   try {
-    const doctorId = req.session.doctorId;
+    const doctorId = req.body.doctorId;
     const { startDate, endDate } = req.query;
 
     let query = { doctor_id: doctorId };

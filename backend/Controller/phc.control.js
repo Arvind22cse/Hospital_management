@@ -43,7 +43,7 @@ const addphc = async (req, res) => {
 //get - general
 const phcList = async (req, res) => {
   try {
-    const phc = await phcModel.find();
+    const phc = await phcModel.find().populate("doctors");
     res.status(200).json(phc);
   } catch (error) {
     console.log(error);

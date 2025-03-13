@@ -101,17 +101,27 @@ const session = require("express-session");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors())
 
+// Configure CORS
+const corsOptions = {
+  origin: 'http://localhost:5173', // Allow only your frontend origin
+  credentials: true, // Allow credentials (cookies, authorization headers)
+};
+
+app.use(cors(corsOptions));
 
 app.use(
-    session({
-      secret: process.env.SESSION_SECRET, // Replace with a strong secret key
-      resave: false,
-      saveUninitialized: true,
-      cookie: { secure: false }, // 1-day session expiry
-    })
-  );
+  session({
+    secret: process.env.SESSION_SECRET, // Use a strong secret key
+    resave: false,
+    saveUninitialized: false, // Do not save uninitialized sessions
+    cookie: { 
+      secure: false, // Set to true if using HTTPS
+      httpOnly: true, // Prevent client-side JS from accessing the cookie
+      maxAge: 1000 * 60 * 60 * 24, // Session duration (e.g., 1 day)
+    },
+  })
+);
 
 app.use('/api',router)
 

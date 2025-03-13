@@ -47,7 +47,7 @@ const doctorRegister = async (req, res) => {
 //get
 const doctorList = async (req, res) => {
   try {
-    const doctors = await doctorModel.find().populate("doctors");
+    const doctors = await doctorModel.find();
     res.status(200).json(doctors);
   } catch (error) {
     console.log(error);
@@ -72,9 +72,11 @@ const doctorLogin = async (req, res) => {
 
     // Store doctor session
     req.session.doctorId = doctor._id;  // Save doctor ID in session
-    req.session.email = doctor.email;   // Save doctor email in session
+    req.session.doctorName = doctor.doctor_name;  // Save doctor email in session
+    
 
-    res.status(200).json({ message: "Login successful", doctorId: doctor._id });
+    res.status(200).json({ message: "Login successful", doctorId: doctor._id, 
+      doctorName: doctor.doctor_name });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error logging in" });

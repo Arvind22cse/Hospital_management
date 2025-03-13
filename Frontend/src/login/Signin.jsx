@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";  // Import axios
 import "./login.css";
 
 const Signin = () => {
@@ -9,12 +10,35 @@ const Signin = () => {
   const [userType, setUserType] = useState(location.state?.defaultUser || "Doctor");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(`Logging in as ${userType} with Email:`, email);
-    // Perform authentication logic here
+    setError("");
+  
+    try {
+      const response = await axios.post("http://localhost:3000/api/doctor-login", { email, password });
+  
+      if (response.status === 200) {
+        console.log("Login Successful:", response.data);
+  
+        // Store doctor details in localStorage
+        localStorage.setItem("doctorId", response.data.doctorId);
+        localStorage.setItem("doctorName", response.data.doctorName);
+
+        console.log(response.data.doctorId)
+  
+        navigate("/doctor-dashboard");
+      }
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    }
   };
+  
 
   return (
     <div className="login-container">
@@ -27,15 +51,17 @@ const Signin = () => {
             Doctor
           </button>
         </div>
-        
+
         <h2>{userType} Login</h2>
-        
+
+        {error && <p className="error-message">{error}</p>} {/* Display error if login fails */}
+
         <form className="login-form" onSubmit={handleLogin}>
           <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           <button type="submit" className="login-btn">Login</button>
           {userType === "Doctor" && (
-            <button className="signup-btn" onClick={() => navigate("/signup")}>Sign Up</button>
+            <button type="button" className="signup-btn" onClick={() => navigate("/signup")}>Sign Up</button>
           )}
         </form>
       </div>

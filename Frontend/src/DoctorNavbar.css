@@ -1,0 +1,34 @@
+.doctor-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1976D2;
+    padding: 10px 20px;
+    color: white;
+  }
+  
+  .doctor-profile {
+    display: flex;
+    align-items: center;
+  }
+  
+  .doctor-profile img.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .logout-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .logout-btn:hover {
+    background-color: #d63031;
+  }
+  

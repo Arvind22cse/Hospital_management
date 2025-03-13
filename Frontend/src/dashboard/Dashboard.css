@@ -5,6 +5,7 @@
   background-color: #f4f4f4;
   min-height: 100vh;
   padding: 20px;
+  margin-top: 60px;
 }
 
 /* Left Section - Holds the hospital filter and hospital cards */

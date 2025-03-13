@@ -102,13 +102,13 @@ const session = require("express-session");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configure CORS
-const corsOptions = {
-  origin: 'http://localhost:5173', // Allow only your frontend origin
-  credentials: true, // Allow credentials (cookies, authorization headers)
-};
+// // Configure CORS
+// const corsOptions = {
+//   origin: 'http://localhost:3001', // Allow only your frontend origin
+//   credentials: true, // Allow credentials (cookies, authorization headers)
+// };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(
   session({

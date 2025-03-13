@@ -17,12 +17,13 @@ const DoctorNavbar = () => {
 
   return (
     <nav className="doctor-navbar">
-      <h2>Doctor Dashboard</h2>
-      <div className="doctor-profile">
+      <div className="doctor-profile" style={{"gap":"40px"}}>
         <img src={doctorAvatar || "default-avatar.png"} alt="Doctor Avatar" className="avatar" />
         <span>{doctorName}</span>
-        <button onClick={handleLogout} className="logout-btn">Logout</button>
       </div>
+      <button onClick={handleLogout} className="logout-btn">
+        Logout
+      </button>
     </nav>
   );
 };

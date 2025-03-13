@@ -17,6 +17,7 @@ const markAttendance = async (req, res) => {
     // Check if already checked in today
     const existingAttendance = await attendanceModel.findOne({ doctor_id: doctorId, date });
     if (existingAttendance) {
+      console.log("Already checked in today" )
       return res.status(400).json({ message: "Already checked in today" });
     }
 

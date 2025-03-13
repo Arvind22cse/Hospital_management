@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Dashboard.css';
+import Navbar from '../Navbar.jsx'
 
 function Dashboard() {
   const [hospitals, setHospitals] = useState([]);
@@ -53,6 +54,7 @@ function Dashboard() {
   };
 
   return (
+    
     <div className='dashboard-wrapper'>
       <div className='left-section'>
         <div className='dashboard-container'>
@@ -94,8 +96,8 @@ function Dashboard() {
       </div>
       
       <div className='right-section'>
-        <div className='row' style={{ marginTop: "100px" }}>
-          <h1 style={{ marginLeft: "90px" }}>Vaccine</h1>
+        <div className='row' style={{ marginTop: "50px" }}>
+          <h1 style={{ marginLeft: "10%" }}>Vaccination Updates</h1>
           <p style={{ marginLeft: "99px", marginTop: "50px" }}>Coming soon...</p>
         </div>
       </div>

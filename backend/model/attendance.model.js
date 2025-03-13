@@ -8,9 +8,10 @@ const attendanceSchema = new mongoose.Schema({
   },
   date: { type: String, required: true }, // Format: YYYY-MM-DD
   check_in: { type: String, required: false },
-  check_out: { type: String, required: false },
+  check_out: { type: String },
 });
 
 const attendanceModel = mongoose.model("Attendance", attendanceSchema);
 
 module.exports = attendanceModel;
+

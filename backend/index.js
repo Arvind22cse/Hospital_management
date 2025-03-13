@@ -96,11 +96,22 @@ var cors = require('cors')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv').config()
 const router = require('./routes/route.js')
+const session = require("express-session");
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 
+
+app.use(
+    session({
+      secret: process.env.SESSION_SECRET, // Replace with a strong secret key
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false }, // 1-day session expiry
+    })
+  );
 
 app.use('/api',router)
 

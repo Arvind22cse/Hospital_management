@@ -6,23 +6,18 @@ const attendanceModel = require("../model/attendance.model.js");
 // Mark Attendance (Check-in)
 const markAttendance = async (req, res) => {
   try {
-    const { doctor_email, check_in } = req.body;
-    const date = new Date().toISOString().split("T")[0]; // Current Date YYYY-MM-DD
-
-    const doctor = await doctorModel.findOne({ doctor_email });
-
-    if (!doctor) {
-      return res.status(404).json({ message: "Doctor not found" });
-    }
+    const doctorId = req.session.doctorId; // Get doctorId from session
+    const date = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+    const check_in = new Date().toLocaleTimeString(); // Current Time
 
     // Check if already checked in today
-    const existingAttendance = await attendanceModel.findOne({ doctor_id: doctor._id, date });
+    const existingAttendance = await attendanceModel.findOne({ doctor_id: doctorId, date });
     if (existingAttendance) {
       return res.status(400).json({ message: "Already checked in today" });
     }
 
     // Create new attendance entry
-    const attendance = new attendanceModel({ doctor_id: doctor._id, date, check_in });
+    const attendance = new attendanceModel({ doctor_id: doctorId, date, check_in });
     await attendance.save();
 
     res.status(200).json({ message: "Check-in successful", attendance });
@@ -35,16 +30,11 @@ const markAttendance = async (req, res) => {
 // Mark Check-out
 const markCheckOut = async (req, res) => {
   try {
-    const { doctor_email, check_out } = req.body;
+    const doctorId = req.session.doctorId;
     const date = new Date().toISOString().split("T")[0];
+    const check_out = new Date().toLocaleTimeString();
 
-    const doctor = await doctorModel.findOne({ doctor_email });
-
-    if (!doctor) {
-      return res.status(404).json({ message: "Doctor not found" });
-    }
-
-    const attendance = await attendanceModel.findOne({ doctor_id: doctor._id, date });
+    const attendance = await attendanceModel.findOne({ doctor_id: doctorId, date });
 
     if (!attendance) {
       return res.status(400).json({ message: "Check-in first before checking out" });
@@ -63,22 +53,17 @@ const markCheckOut = async (req, res) => {
 // Get Doctor Attendance with Filtering
 const getDoctorAttendance = async (req, res) => {
   try {
-    const { doctor_email, startDate, endDate } = req.query;
+    const doctorId = req.session.doctorId;
+    const { startDate, endDate } = req.query;
 
-    const doctor = await doctorModel.findOne({ doctor_email });
-
-    if (!doctor) {
-      return res.status(404).json({ message: "Doctor not found" });
-    }
-
-    let query = { doctor_id: doctor._id };
+    let query = { doctor_id: doctorId };
     if (startDate && endDate) {
       query.date = { $gte: startDate, $lte: endDate };
     }
 
     const attendance = await attendanceModel.find(query);
 
-    res.status(200).json({ doctor: doctor.name, attendance });
+    res.status(200).json({ attendance });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error fetching attendance" });

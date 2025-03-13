@@ -7,4 +7,5 @@ npm i dotenv
 npm i cors
 npm install body-parser
 npm i bcrypt
+npm install express-session
 

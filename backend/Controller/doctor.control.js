@@ -1,4 +1,5 @@
 const { response } = require("express");
+const bcrypt = require("bcryptjs");
 const doctorModel = require("../model/doctor.model.js");
 
 
@@ -55,4 +56,38 @@ const doctorList = async (req, res) => {
   }
 };
 
-module.exports = { doctorRegister , doctorList  };
+
+
+const doctorLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const doctor = await doctorModel.findOne({ email });
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, doctor.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Store doctor session
+    req.session.doctorId = doctor._id;  // Save doctor ID in session
+    req.session.email = doctor.email;   // Save doctor email in session
+
+    res.status(200).json({ message: "Login successful", doctorId: doctor._id });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error logging in" });
+  }
+};
+
+const doctorLogout = (req, res) => {
+  req.session.destroy(); // Destroy session on logout
+  res.status(200).json({ message: "Logout successful" });
+};
+
+
+
+module.exports = { doctorRegister , doctorList, doctorLogin ,  doctorLogout};

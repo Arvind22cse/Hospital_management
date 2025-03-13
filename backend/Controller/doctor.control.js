@@ -1,5 +1,4 @@
 const { response } = require("express");
-const bcrypt = require("bcryptjs");
 const doctorModel = require("../model/doctor.model.js");
 
 
@@ -48,7 +47,7 @@ const doctorRegister = async (req, res) => {
 //get
 const doctorList = async (req, res) => {
   try {
-    const doctors = await doctorModel.find();
+    const doctors = await doctorModel.find().populate("doctors");
     res.status(200).json(doctors);
   } catch (error) {
     console.log(error);
@@ -62,13 +61,12 @@ const doctorLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const doctor = await doctorModel.findOne({ email });
+    const doctor = await doctorModel.findOne({ doctor_email:email });
     if (!doctor) {
       return res.status(404).json({ message: "Doctor not found" });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, doctor.password);
-    if (!isPasswordValid) {
+    if (password !== doctor.password) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 

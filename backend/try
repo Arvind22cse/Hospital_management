@@ -1,0 +1,75 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => console.log("MongoDB Connected"))
+  .catch(err => console.error("MongoDB connection error:", err));
+
+// Models
+const User = mongoose.model('User', new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  phone: String,
+  password: String,
+  role: { type: String, enum: ['admin', 'doctor', 'nurse', 'general'] }
+}));
+
+const PHC = mongoose.model('PHC', new mongoose.Schema({
+  name: String,
+  location: String,
+  type: { type: String, enum: ['PHC', 'Upgraded PHC', 'Sub-Centre'] },
+  services: [String],
+  doctors: [{ name: String, specialization: String, arrival_time: String, availability: Boolean }],
+  contact_info: String,
+  facilities: [String],
+  alerts: [String]
+}));
+
+// Routes
+
+// General People: View PHCs & services
+app.get('/api/general/phcs', async (req, res) => {
+  const phcs = await PHC.find();
+  res.json(phcs);
+});
+
+// Admin: Modify & Update PHCs
+app.post('/api/admin/phcs', async (req, res) => {
+  try {
+    const newPHC = new PHC(req.body);
+    await newPHC.save();
+    res.status(201).json({ message: 'PHC added successfully' });
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to add PHC' });
+  }
+});
+
+app.put('/api/admin/phcs/:id', async (req, res) => {
+  try {
+    await PHC.findByIdAndUpdate(req.params.id, req.body);
+    res.json({ message: 'PHC updated successfully' });
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to update PHC' });
+  }
+});
+
+app.delete('/api/admin/phcs/:id', async (req, res) => {
+  try {
+    await PHC.findByIdAndDelete(req.params.id);
+    res.json({ message: 'PHC deleted successfully' });
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to delete PHC' });
+  }
+});
+
+app.listen(5000, () => console.log("Server running on port 5000"));

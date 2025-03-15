@@ -18,7 +18,7 @@ const DoctorNavbar = () => {
   return (
     <nav className="doctor-navbar">
       <div className="doctor-profile" style={{"gap":"40px"}}>
-        <img src={doctorAvatar || "default-avatar.png"} alt="Doctor Avatar" className="avatar" />
+        <img src="https://t4.ftcdn.net/jpg/01/34/29/31/360_F_134293169_ymHT6Lufl0i94WzyE0NNMyDkiMCH9HWx.jpg"alt="Doctor Avatar" className="avatar" />
         <span>{doctorName}</span>
       </div>
       <button onClick={handleLogout} className="logout-btn">

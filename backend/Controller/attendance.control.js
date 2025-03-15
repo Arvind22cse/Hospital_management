@@ -60,7 +60,8 @@ const markCheckOut = async (req, res) => {
 // Get Doctor Attendance with Filtering
 const getDoctorAttendance = async (req, res) => {
   try {
-    const doctorId = req.body.doctorId;
+    const doctorId = req.query.doctorId || req.body.doctorId;
+
     const { startDate, endDate } = req.query;
 
     let query = { doctor_id: doctorId };

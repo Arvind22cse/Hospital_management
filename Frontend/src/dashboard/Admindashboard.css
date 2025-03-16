@@ -1,0 +1,91 @@
+/* Navbar Container */
+.navbar {
+    background-color: #333;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;  /* Moves everything to the right */
+    align-items: center;
+    padding: 14px 16px;
+    z-index: 1000;
+}
+
+/* Navigation Links */
+.nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    margin-left: auto;  /* Pushes links to the right */
+}
+
+.nav-links li {
+    margin: 0;
+}
+
+.nav-links .nav-a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.nav-links .nav-a:hover:not(.active) {
+    border-radius: 5px;
+    background-color: #111;
+}
+
+.active {
+    border-radius: 5px;
+    background-color: #04AA6D;
+}
+
+/* Hamburger Icon */
+.hamburger {
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    background: none;
+    border: none;
+    display: none;
+    margin-left: auto;  /* Moves hamburger icon to the right */
+}
+
+/* Logout Button */
+.nav-links button {
+    background-color: red;
+    color: white;
+    border-radius: 3px;
+    width: 85px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 50px;
+        right: 0;
+        background-color: #333;
+        width: 100%;
+        align-items: flex-end;  /* Align dropdown to the right */
+    }
+
+    .nav-links.show {
+        display: flex;
+    }
+
+    .nav-links li {
+        text-align: right;
+    }
+
+    .hamburger {
+        display: block;
+    }
+}

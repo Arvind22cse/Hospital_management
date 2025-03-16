@@ -12,23 +12,54 @@ const Signin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   setError("");
+  
+  //   try {
+  //     const response = await axios.post("http://localhost:3000/api/doctor-login", { email, password });
+  
+  //     if (response.status === 200) {
+  //       console.log("Login Successful:", response.data);
+  
+  //       // Store doctor details in localStorage
+  //       localStorage.setItem("doctorId", response.data.doctorId);
+  //       localStorage.setItem("doctorName", response.data.doctorName);
+
+  //       console.log(response.data.doctorId)
+  
+  //       navigate("/doctor-dashboard");
+  //     }
+  //   } catch (error) {
+  //     if (error.response) {
+  //       setError(error.response.data.message);
+  //     } else {
+  //       setError("Something went wrong. Please try again.");
+  //     }
+  //   }
+  // };
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+  
+    if (userType === "Admin" && email === "admin@gmail.com" && password === "123") {
+      console.log("Admin Login Successful");
+      navigate("/admindashboard"); // Redirect to admin dashboard
+      return;
+    }
   
     try {
       const response = await axios.post("http://localhost:3000/api/doctor-login", { email, password });
   
       if (response.status === 200) {
-        console.log("Login Successful:", response.data);
+        console.log("Doctor Login Successful:", response.data);
   
         // Store doctor details in localStorage
         localStorage.setItem("doctorId", response.data.doctorId);
         localStorage.setItem("doctorName", response.data.doctorName);
-
-        console.log(response.data.doctorId)
   
-        navigate("/doctor-dashboard");
+        navigate("/doctor-dashboard"); // Redirect to doctor dashboard
       }
     } catch (error) {
       if (error.response) {
@@ -39,7 +70,6 @@ const Signin = () => {
     }
   };
   
-
   return (
     <div className="login-container">
       <div className="login-box">

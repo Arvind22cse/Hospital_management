@@ -1,0 +1,146 @@
+/* General Styles */
+.body-container {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin-top: 190px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Form Container */
+  .form-container {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Form Heading */
+  .form-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Form Fields */
+  .form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  /* Submit Button */
+  .form-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .form-button:hover {
+    background-color: #218838;
+  }
+  
+  /* Navbar Styles */
+  .navbar-container {
+    background-color: #333;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 14px 16px;
+    z-index: 1000;
+  }
+  
+  /* Navigation Links */
+  .nav-links-container {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    margin-left: auto;
+  }
+  
+  .nav-item {
+    margin: 0;
+  }
+  
+  .nav-link {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+  .nav-link:hover {
+    border-radius: 5px;
+    background-color: #111;
+  }
+  
+  .nav-active {
+    border-radius: 5px;
+    background-color: #04AA6D;
+  }
+  
+  /* Logout Button */
+  .logout-button {
+    background-color: red;
+    color: white;
+    border-radius: 3px;
+    width: 85px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 768px) {
+    .nav-links-container {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background-color: #333;
+      width: 100%;
+      align-items: flex-end;
+    }
+  
+    .nav-links-show {
+      display: flex;
+    }
+  
+    .nav-item {
+      text-align: right;
+    }
+  
+    .hamburger-menu {
+      display: block;
+      font-size: 24px;
+      cursor: pointer;
+      color: white;
+      background: none;
+      border: none;
+      margin-left: auto;
+    }
+  }
+  

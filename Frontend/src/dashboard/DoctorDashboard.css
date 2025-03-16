@@ -1,9 +1,9 @@
-body {
+/* body {
   font-family: 'Arial', sans-serif;
   background: linear-gradient(to bottom right, #e3f2fd, #bbdefb);
   margin: 0;
   padding: 0;
-}
+} */
 
 .dashboard-container {
   max-width: 1200px;

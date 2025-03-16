@@ -104,22 +104,22 @@ app.use(express.urlencoded({ extended: true }));
 //   origin: 'http://localhost:3001', // Allow only your frontend origin
 //   credentials: true, // Allow credentials (cookies, authorization headers)
 // };
-// app.use(
-//   cors({
-//     origin: "http://localhost:5173", // Allow only your frontend origin
-//     credentials: true, // Allow cookies and credentials
-//   })
-// );
-// app.use(cors());
-
 app.use(
   cors({
-    origin: "http://localhost:5174", // ✅ Allow only your frontend origin
-    credentials: true, // ✅ Allow cookies & authentication headers
-    methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Allow specific HTTP methods
-    allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allow necessary headers
+    origin: "http://localhost:5173", // Allow only your frontend origin
+    credentials: true, // Allow cookies and credentials
   })
 );
+// app.use(cors());
+
+// app.use(
+//   cors({
+//     origin: "http://localhost:5174", // ✅ Allow only your frontend origin
+//     credentials: true, // ✅ Allow cookies & authentication headers
+//     methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Allow specific HTTP methods
+//     allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allow necessary headers
+//   })
+// );
 app.use(
   session({
     secret: process.env.SESSION_SECRET, // Use a strong secret key

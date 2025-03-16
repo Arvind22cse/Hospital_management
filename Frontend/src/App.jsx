@@ -9,6 +9,7 @@ import Admindashboard from './dashboard/Admindashboard.jsx';
 import AdminDoctor from './dashboard/AdminDoctor.jsx';
 import AdminHospital from './dashboard/AdminHospital.jsx';
 import AdminVaccine from './dashboard/AdminVaccine.jsx';
+import AdminHosp from './dashboard/AdminHosp.jsx';
 
 function Layout() {
   const location = useLocation();
@@ -28,6 +29,7 @@ function Layout() {
         <Route path="/admindoctor" element={<AdminDoctor/>} />
         <Route path="/adminhospital" element={<AdminHospital/>}/>
         <Route path="/adminvaccine" element={<AdminVaccine/>}/>
+        <Route path='/adminhosp' element={<AdminHosp/>}/>
 
       </Routes>
     </div>

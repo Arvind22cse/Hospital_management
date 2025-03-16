@@ -88,16 +88,13 @@
 //   res.json({ users, services, alerts });
 // });
 
-
-
-const express = require('express');
-const app = express()
-var cors = require('cors')
-const mongoose = require('mongoose')
-const dotenv = require('dotenv').config()
-const router = require('./routes/route.js')
+const express = require("express");
+const app = express();
+var cors = require("cors");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv").config();
+const router = require("./routes/route.js");
 const session = require("express-session");
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -107,20 +104,28 @@ app.use(express.urlencoded({ extended: true }));
 //   origin: 'http://localhost:3001', // Allow only your frontend origin
 //   credentials: true, // Allow credentials (cookies, authorization headers)
 // };
-app.use(
-  cors({
-    origin: "http://localhost:5173", // Allow only your frontend origin
-    credentials: true, // Allow cookies and credentials
-  })
-);
+// app.use(
+//   cors({
+//     origin: "http://localhost:5173", // Allow only your frontend origin
+//     credentials: true, // Allow cookies and credentials
+//   })
+// );
 // app.use(cors());
 
+app.use(
+  cors({
+    origin: "http://localhost:5174", // ✅ Allow only your frontend origin
+    credentials: true, // ✅ Allow cookies & authentication headers
+    methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Allow specific HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allow necessary headers
+  })
+);
 app.use(
   session({
     secret: process.env.SESSION_SECRET, // Use a strong secret key
     resave: false,
     saveUninitialized: false, // Do not save uninitialized sessions
-    cookie: { 
+    cookie: {
       secure: false, // Set to true if using HTTPS
       httpOnly: true, // Prevent client-side JS from accessing the cookie
       maxAge: 1000 * 60 * 60 * 24, // Session duration (e.g., 1 day)
@@ -128,16 +133,17 @@ app.use(
   })
 );
 
-app.use('/api',router)
+app.use("/api", router);
 
-
-mongoose.connect(process.env.MONGO_URL).then((result) => {
-    console.log('connected to mongodb')
-}).catch((err)=>{
+mongoose
+  .connect(process.env.MONGO_URL)
+  .then((result) => {
+    console.log("connected to mongodb");
+  })
+  .catch((err) => {
     console.error(err);
-})
+  });
 
-
-app.listen(3000, () =>{
-    console.log("server running")
-})
+app.listen(3000, () => {
+  console.log("server running");
+});

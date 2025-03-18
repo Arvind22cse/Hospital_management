@@ -78,4 +78,34 @@ const getDoctorAttendance = async (req, res) => {
   }
 };
 
-module.exports = { markAttendance, markCheckOut, getDoctorAttendance };
+
+
+
+// Get all attendance records for a particular doctor with doctor details
+const getAttendance = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+
+
+    if (!doctorId) {
+      return res.status(400).json({ message: "Doctor ID is required." });
+    }
+
+    // Fetch attendance records and populate doctor details
+    const attendance = await attendanceModel
+      .find({ doctor_id: doctorId })
+      .populate("doctor_id", "name email specialization"); // Select relevant fields from Doctor model
+
+    if (!attendance.length) {
+      return res.status(404).json({ message: "No attendance records found for this doctor." });
+    }
+
+    res.status(200).json({attendance });
+  } catch (error) {
+    console.error("Error fetching attendance:", error);
+    res.status(500).json({ message: "Server error while fetching attendance." });
+  }
+};
+
+
+module.exports = { markAttendance, markCheckOut, getDoctorAttendance , getAttendance };

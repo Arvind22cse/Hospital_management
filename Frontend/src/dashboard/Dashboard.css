@@ -16,11 +16,14 @@
 }
 
 /* Right Section - Holds additional content */
+/* Right Section - Holds additional content */
 .right-section {
-  outline: 1.5px solid #000000;
   flex: 0.5;
   background-color: #ffffff;
+  border-left: 1px solid black; /* Add left border instead of right */
+  padding-left: 20px; /* Add some padding to separate content from the line */
 }
+
 
 /* Container styles */
 .dashboard-container {
@@ -182,6 +185,7 @@ p {
 .left-sec {
   flex: 1;
   padding-right: 20px;
+
 }
 
 /* Right Section (Doctors List) */
@@ -190,4 +194,5 @@ p {
   padding-left: 20px;
   max-width: 500px;
   overflow-y: auto;
+  border-right: 1px solid black;
 }

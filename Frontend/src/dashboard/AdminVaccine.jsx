@@ -93,7 +93,7 @@ function VaccineCard() {
       <ToastContainer position="top-right" autoClose={3000} />
 
       {/* Button to open the popup */}
-      <button onClick={() => setShowPopup(true)} className="open-popup-btn" style={{marginTop:"200px"}}>
+      <button onClick={() => setShowPopup(true)} className="open-popup-btn" id="addvacine" style={{marginTop:"200px"}}>
         Add Vaccine
       </button>
 
@@ -102,57 +102,144 @@ function VaccineCard() {
 
       {/* Popup Modal */}
       {showPopup && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close-btn" onClick={() => setShowPopup(false)}>
-              &times;
-            </span>
-            <h2>Add Vaccine</h2>
-            <form onSubmit={handleAddVaccine}>
-              <input
-                type="text"
-                placeholder="Vaccine Name"
-                value={formData.vaccine_name}
-                onChange={(e) => setFormData({ ...formData, vaccine_name: e.target.value })}
-                required
-              />
-              <input
-                type="number"
-                placeholder="Required Age"
-                value={formData.required_age}
-                onChange={(e) => setFormData({ ...formData, required_age: e.target.value })}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Location"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                required
-              />
-              <input
-                type="date"
-                value={formData.from_date}
-                onChange={(e) => setFormData({ ...formData, from_date: e.target.value })}
-                required
-              />
-              <input
-                type="date"
-                value={formData.last_date}
-                onChange={(e) => setFormData({ ...formData, last_date: e.target.value })}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                required
-              />
-              <button type="submit" className="add-btn">Add Vaccine</button>
-            </form>
-          </div>
-        </div>
+       <div
+       className="modal"
+      
+     >
+       <div className="modal-content" style={{ position: "relative" }}>
+         <span
+           className="close-btn"
+           onClick={() => setShowPopup(false)}
+           style={{
+             position: "absolute",
+             top: "10px",
+             right: "15px",
+             fontSize: "24px",
+             cursor: "pointer",
+             color: "#333",
+           }}
+         >
+           &times;
+         </span>
+         <h2 style={{ textAlign: "center" }}>Add Vaccine</h2>
+         <form
+           onSubmit={handleAddVaccine}
+           style={{ display: "flex", flexDirection: "column" }}
+         >
+           <input
+             type="text"
+             placeholder="Vaccine Name"
+             value={formData.vaccine_name}
+             onChange={(e) =>
+               setFormData({ ...formData, vaccine_name: e.target.value })
+             }
+             required
+             style={{
+               padding: "10px",
+               margin: "10px 0",
+               border: "1px solid #ccc",
+               borderRadius: "5px",
+               fontSize: "16px",
+             }}
+           />
+           <input
+             type="number"
+             placeholder="Required Age"
+             value={formData.required_age}
+             onChange={(e) =>
+               setFormData({ ...formData, required_age: e.target.value })
+             }
+             required
+             style={{
+               padding: "10px",
+               margin: "10px 0",
+               border: "1px solid #ccc",
+               borderRadius: "5px",
+               fontSize: "16px",
+             }}
+           />
+           <input
+             type="text"
+             placeholder="Location"
+             value={formData.location}
+             onChange={(e) =>
+               setFormData({ ...formData, location: e.target.value })
+             }
+             required
+             style={{
+               padding: "10px",
+               margin: "10px 0",
+               border: "1px solid #ccc",
+               borderRadius: "5px",
+               fontSize: "16px",
+             }}
+           />
+           <input
+             type="date"
+             value={formData.from_date}
+             onChange={(e) =>
+               setFormData({ ...formData, from_date: e.target.value })
+             }
+             required
+             style={{
+               padding: "10px",
+               margin: "10px 0",
+               border: "1px solid #ccc",
+               borderRadius: "5px",
+               fontSize: "16px",
+             }}
+           />
+           <input
+             type="date"
+             value={formData.last_date}
+             onChange={(e) =>
+               setFormData({ ...formData, last_date: e.target.value })
+             }
+             required
+             style={{
+               padding: "10px",
+               margin: "10px 0",
+               border: "1px solid #ccc",
+               borderRadius: "5px",
+               fontSize: "16px",
+             }}
+           />
+           <input
+             type="text"
+             placeholder="Description"
+             value={formData.description}
+             onChange={(e) =>
+               setFormData({ ...formData, description: e.target.value })
+             }
+             required
+             style={{
+               padding: "10px",
+               margin: "10px 0",
+               border: "1px solid #ccc",
+               borderRadius: "5px",
+               fontSize: "16px",
+             }}
+           />
+           <button
+             type="submit"
+             className="add-btn"
+             style={{
+               padding: "10px",
+               marginTop: "10px",
+               fontSize: "16px",
+               border: "none",
+               borderRadius: "5px",
+               cursor: "pointer",
+               backgroundColor: "#28a745",
+               color: "white",
+             }}
+           >
+             Add Vaccine
+           </button>
+         </form>
+       </div>
+     </div>
+     
       )}
 
       {/* Display Vaccines */}
@@ -165,32 +252,61 @@ function VaccineCard() {
                   type="text"
                   value={formData.vaccine_name}
                   onChange={(e) => setFormData({ ...formData, vaccine_name: e.target.value })}
+                  style={{
+                    width:"200px",
+                    height:"50px",
+                  }}
                 />
+                <br />
                 <input
                   type="number"
                   value={formData.required_age}
                   onChange={(e) => setFormData({ ...formData, required_age: e.target.value })}
-                />
+                  style={{
+                    width:"200px",
+                    height:"50px",
+                  }}
+                /> <br />
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  style={{
+                    width:"200px",
+                    height:"50px",
+                  }}
                 />
+<br />
                 <input
                   type="date"
                   value={formData.from_date}
                   onChange={(e) => setFormData({ ...formData, from_date: e.target.value })}
+                  style={{
+                    width:"200px",
+                    height:"50px",
+                  }}
                 />
+                <br />
                 <input
                   type="date"
                   value={formData.last_date}
                   onChange={(e) => setFormData({ ...formData, last_date: e.target.value })}
+                  style={{
+                    width:"200px",
+                    height:"50px",
+                  }}
                 />
+                <br />
                 <input
                   type="text"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  style={{
+                    width:"200px",
+                    height:"50px",
+                  }}
                 />
+                <br />
                 <button onClick={handleUpdate} className="update-btn">Update</button>
                 <button onClick={() => setEditingVaccine(null)} className="cancel-btn">Cancel</button>
               </div>

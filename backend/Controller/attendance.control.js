@@ -70,7 +70,7 @@ const getDoctorAttendance = async (req, res) => {
     }
 
     const attendance = await attendanceModel.find(query);
-
+    console.log("Backend Attendance Data:", attendance);
     res.status(200).json({ attendance });
   } catch (error) {
     console.log(error);

@@ -91,9 +91,11 @@ const getAttendance = async (req, res) => {
       return res.status(400).json({ message: "Doctor ID is required." });
     }
 
+    const today = new Date().toISOString().split("T")[0];
+
     // Fetch attendance records and populate doctor details
     const attendance = await attendanceModel
-      .find({ doctor_id: doctorId })
+      .find({ doctor_id: doctorId , date: today  })
       .populate("doctor_id", "name email specialization"); // Select relevant fields from Doctor model
 
     if (!attendance.length) {

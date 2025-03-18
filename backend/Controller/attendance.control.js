@@ -78,36 +78,61 @@ const getDoctorAttendance = async (req, res) => {
   }
 };
 
-
-
-
-// Get all attendance records for a particular doctor with doctor details
 const getAttendance = async (req, res) => {
   try {
     const { doctorId } = req.params;
-
 
     if (!doctorId) {
       return res.status(400).json({ message: "Doctor ID is required." });
     }
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
 
-    // Fetch attendance records and populate doctor details
+    // Fetch attendance records for the doctor today and populate doctor details
     const attendance = await attendanceModel
-      .find({ doctor_id: doctorId , date: today  })
-      .populate("doctor_id", "name email specialization"); // Select relevant fields from Doctor model
+      .find({ doctor_id: doctorId, date: today })
+      .populate("doctor_id", "name email specialization"); // Populate doctor details
 
     if (!attendance.length) {
       return res.status(404).json({ message: "No attendance records found for this doctor." });
     }
 
-    res.status(200).json({attendance });
+    res.status(200).json({ attendance });
   } catch (error) {
     console.error("Error fetching attendance:", error);
     res.status(500).json({ message: "Server error while fetching attendance." });
   }
 };
+
+
+
+// Get all attendance records for a particular doctor with doctor details
+// const getAttendance = async (req, res) => {
+//   try {
+//     const { doctorId } = req.params;
+
+
+//     if (!doctorId) {
+//       return res.status(400).json({ message: "Doctor ID is required." });
+//     }
+
+//     const today = new Date().toISOString().split("T")[0];
+
+//     // Fetch attendance records and populate doctor details
+//     const attendance = await attendanceModel
+//       .find({ doctor_id: doctorId , date: today  })
+//       .populate("doctor_id", "name email specialization"); // Select relevant fields from Doctor model
+
+//     if (!attendance.length) {
+//       return res.status(404).json({ message: "No attendance records found for this doctor." });
+//     }
+
+//     res.status(200).json({attendance });
+//   } catch (error) {
+//     console.error("Error fetching attendance:", error);
+//     res.status(500).json({ message: "Server error while fetching attendance." });
+//   }
+// };
 
 
 module.exports = { markAttendance, markCheckOut, getDoctorAttendance , getAttendance };

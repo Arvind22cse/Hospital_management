@@ -1,22 +1,30 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./Signup.css"
+import "./Signup.css";
 
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    
     doctor_name: "",
     doctor_email: "",
     password: "",
-    phone: "",
+    phone: "+91", // Default prefix
     specialization: "",
   });
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    let { name, value } = e.target;
+
+    if (name === "phone") {
+      // Ensure +91 remains at the start
+      if (!value.startsWith("+91")) {
+        value = "+91" + value.replace(/[^0-9]/g, "").slice(2); // Keep only numbers after +91
+      }
+    }
+
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSignup = async (e) => {
@@ -25,10 +33,8 @@ const Signup = () => {
 
     try {
       const response = await axios.post("http://localhost:3000/api/add-doctor", formData);
-     
-        console.log("Signup Successful", response.data);
-        navigate("/login");
-      
+      console.log("Signup Successful", response.data);
+      navigate("/login");
     } catch (error) {
       if (error.response) {
         setError(error.response.data.message);
@@ -85,7 +91,10 @@ const Signup = () => {
             required
           />
           <button type="submit" className="signup-btn">Sign Up</button>
-          <p className="redirect-login">Already have an account? <span onClick={() => navigate("/login")} className="login-link">Login</span></p>
+          <p className="redirect-login">
+            Already have an account? 
+            <span onClick={() => navigate("/login")} className="login-link"> Login</span>
+          </p>
         </form>
       </div>
     </div>

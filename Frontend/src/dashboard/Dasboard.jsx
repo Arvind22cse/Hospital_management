@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Dashboard.css';
-import Navbar from '../Navbar.jsx';
 
 function Dashboard() {
   const [hospitals, setHospitals] = useState([]);
@@ -14,6 +13,7 @@ function Dashboard() {
   const [vaccines, setVaccines] = useState([]);
   const [attendance, setAttendance] = useState([]);
 
+  // Fetch hospitals data and related filters (location, services)
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
@@ -31,23 +31,11 @@ function Dashboard() {
       }
     };
 
-    const fetchDoctorAttendance = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3000/api/doctor-attendance`, {
-          params: { doctorId: selectedHospital?._id } // Make sure you have a valid doctor ID
-        });
-    
-        console.log("Doctor Attendance Response:", response.data);
-        setAttendance(Array.isArray(response.data.attendance) ? response.data.attendance : []);
-      } catch (error) {
-        console.error("Error fetching doctor attendance:", error);
-        setAttendance([]);
-      }
-    };
-    
-    
-    
+    fetchHospitals();
+  }, []);
 
+  // Fetch vaccine updates
+  useEffect(() => {
     const fetchVaccines = async () => {
       try {
         const response = await axios.get("http://localhost:3000/api/list-vac");
@@ -57,10 +45,45 @@ function Dashboard() {
       }
     };
 
-    fetchHospitals();
-    fetchDoctorAttendance();
     fetchVaccines();
   }, []);
+
+  useEffect(() => {
+    const fetchDoctorAttendance = async () => {
+      if (!selectedHospital?.doctors) return;
+  
+      const doctorAttendanceData = await Promise.all(
+        selectedHospital.doctors.map(async (doctor) => {
+          try {
+            const response = await axios.get(`http://localhost:3000/api/attendance/${doctor._id}`);
+            
+            // Check if today's attendance data exists for the doctor
+            const todayAttendance = response.data.attendance.filter(att => new Date(att.date).toISOString().split("T")[0] === new Date().toISOString().split("T")[0]);
+            
+            // Determine if the doctor has checked in and checked out
+            const hasCheckedInToday = todayAttendance.some(att => att.check_in);
+            const hasCheckedOutToday = todayAttendance.some(att => att.check_out);
+  
+            return { 
+              doctorId: doctor._id, 
+              attendance: todayAttendance, 
+              available: hasCheckedInToday && !hasCheckedOutToday // Available if checked in but not checked out
+            };
+          } catch (error) {
+            console.error(`Error fetching attendance for Doctor ${doctor._id}:`, error);
+            return { doctorId: doctor._id, attendance: [], available: false };
+          }
+        })
+      );
+  
+      setAttendance(doctorAttendanceData);
+    };
+  
+    if (selectedHospital) {
+      fetchDoctorAttendance();
+    }
+  }, [selectedHospital]);
+  
 
   // Apply filters dynamically when `locationFilter` or `serviceFilter` changes
   useEffect(() => {
@@ -108,9 +131,9 @@ function Dashboard() {
           <div className='hospital-cards-container'>
             {filteredHospitals.map((hospital) => (
               <div key={hospital._id} className='hospital-card'>
-                <img 
-                  src="https://img.freepik.com/free-vector/people-walking-sitting-hospital-building-city-clinic-glass-exterior-flat-vector-illustration-medical-help-emergency-architecture-healthcare-concept_74855-10130.jpg" 
-                  alt={hospital.name} 
+                <img
+                  src="https://img.freepik.com/free-vector/people-walking-sitting-hospital-building-city-clinic-glass-exterior-flat-vector-illustration-medical-help-emergency-architecture-healthcare-concept_74855-10130.jpg"
+                  alt={hospital.name}
                   className='hospital-image'
                 />
                 <h3>{hospital.name}</h3>
@@ -160,47 +183,37 @@ function Dashboard() {
               </div>
               
               <div className='right-sec' style={{ border: "1px solid black", padding: "10px" }}>
-                <h3>Doctors Available</h3>
+                <h3 style={{marginTop:"60px"}}>Doctors Available</h3>
                 {selectedHospital.doctors?.length > 0 ? (
-  <ul>
-    {selectedHospital.doctors.map((doctor, index) => {
-      if (!Array.isArray(attendance)) return null; // Prevents error
-
-      // Find attendance entry for the doctor
-      const doctorAttendance = attendance.find(
-        (att) => att.doctor_id === doctor._id && att.date === new Date().toISOString().split("T")[0]
-      );
-
-      console.log("Doctor:", doctor, "Attendance:", doctorAttendance); // Debugging
-
-      // Doctor is available if they checked in today but haven't checked out yet
-      const isAvailable = doctorAttendance && !doctorAttendance.check_out;
-
-      return (
-        <li key={index}>
-          <strong>{doctor.doctor_name}</strong> - {doctor.specialization}
-          <br />
-          📞 {doctor.phone} | ✉️ {doctor.doctor_email}
-          <br />
-          <span style={{
-            color: isAvailable ? "green" : "red",
-            fontWeight: "bold",
-            backgroundColor: isAvailable ? "#d4f5d4" : "#f8d7da",
-            padding: "3px 8px",
-            borderRadius: "5px"
-          }}>
-            {isAvailable ? "✅ Available" : "❌ Not Available"}
-          </span>
-        </li>
-      );
-    })}
-  </ul>
-) : (
-  <p>No doctors available</p>
-)}
-
-
-
+                  <ul>
+                  {selectedHospital.doctors?.map((doctor, index) => {
+                    const doctorAttendanceEntry = attendance.find((entry) => entry.doctorId === doctor._id);
+                    
+                    return (
+                      <li key={index}>
+                        <strong>{doctor.doctor_name}</strong> - {doctor.specialization}
+                        <br />
+                        📞 {doctor.phone} | ✉️ {doctor.doctor_email}
+                        <br />
+                        <span
+                          style={{
+                            color: doctorAttendanceEntry?.available ? "green" : "red",
+                            fontWeight: "bold",
+                            backgroundColor: doctorAttendanceEntry?.available ? "#d4f5d4" : "#f8d7da",
+                            padding: "3px 8px",
+                            borderRadius: "5px"
+                          }}
+                        >
+                          {doctorAttendanceEntry?.available ? "✅ Available" : "❌ Not Available"}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                
+                ) : (
+                  <p>No doctors available</p>
+                )}
               </div>
             </div>
           </div>

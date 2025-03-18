@@ -33,4 +33,6 @@ router.post('/add-doctor', doctorRegister);
 router.post("/add-doctor-phc", addDoctorToPHC);
 
 
+
+
 module.exports = router;

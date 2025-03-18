@@ -7,4 +7,6 @@ npm i dotenv
 npm i cors
 npm install body-parser
 npm install express-session
+npm install node-cron dotenv mongoose axios
+
 

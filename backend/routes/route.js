@@ -2,7 +2,8 @@ const express = require('express');
 const { doctorRegister, doctorList, doctorLogin, doctorLogout} = require('../Controller/doctor.control.js')
 const { markAttendance, markCheckOut, getDoctorAttendance , getAttendance} = require("../Controller/attendance.control.js");
 const { addphc , deletephc, updatePhc, phcList , addDoctorToPHC}= require("../Controller/phc.control.js")
-const { addvac, deletevac, updatevac, vacList } = require("../Controller/vacination.control.js")
+const { addvac, deletevac, updatevac, vacList } = require("../Controller/vacination.control.js");
+const { postAttendance, postCheckOut, getatten } = require('../Controller/atten.control.js');
 
 
 
@@ -31,7 +32,9 @@ router.put('/admin/uvac/:id',updatevac);
 
 router.post('/add-doctor', doctorRegister);  
 router.post("/add-doctor-phc", addDoctorToPHC);
-
+router.post("/attendance", postAttendance);
+router.post("/checkout", postCheckOut);
+router.get("/getatten/:doctorId", getatten);
 
 
 

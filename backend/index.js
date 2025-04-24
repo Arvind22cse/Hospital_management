@@ -5,15 +5,15 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
 const router = require("./routes/route.js");
 const session = require("express-session");
-const cron = require("node-cron");
-const twilio = require("twilio");
+// const cron = require("node-cron");
+// const twilio = require("twilio");
 const Attendance = require("./model/attendance.model.js");
 const Doctor = require("./model/doctor.model.js");
 
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
+// const client = twilio(
+//   process.env.TWILIO_ACCOUNT_SID,
+//   process.env.TWILIO_AUTH_TOKEN
+// );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -43,7 +43,7 @@ app.use(
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET, // Use a strong secret key
+    secret:'your-secret-key', // Use a strong secret key
     resave: false,
     saveUninitialized: false, // Do not save uninitialized sessions
     cookie: {
@@ -57,7 +57,7 @@ app.use(
 app.use("/api", router);
 
 mongoose
-  .connect(process.env.MONGO_URL)
+  .connect("mongodb+srv://arvindm22cse:31-Aug-04@hospital.jyifl.mongodb.net/?retryWrites=true&w=majority&appName=Hospital")
   .then((result) => {
     console.log("connected to mongodb");
   })
@@ -68,50 +68,50 @@ mongoose
 
 
 // Function to send SMS via Twilio
-const sendSms = async (phone, message) => {
+// const sendSms = async (phone, message) => {
 
-  try {
-    const response = await client.messages.create({
-      body: message,
-      from:process.env.TWILIO_PHONE_NUMBER, 
-      to: phone, 
-    });
+//   try {
+//     const response = await client.messages.create({
+//       body: message,
+//       from:process.env.TWILIO_PHONE_NUMBER, 
+//       to: phone, 
+//     });
 
-    console.log(`✅ SMS sent to ${phone}: ${response.sid}`);
-    return response;
-  } catch (error) {
-    console.error(`❌ Error sending SMS to ${phone}:`, error.message);
-    throw error;
-  }
-};
+//     console.log(`✅ SMS sent to ${phone}: ${response.sid}`);
+//     return response;
+//   } catch (error) {
+//     console.error(`❌ Error sending SMS to ${phone}:`, error.message);
+//     throw error;
+//   }
+// };
 
 
 // Cron job runs every day at 9:30 AM
-cron.schedule("30 9 * * *", async () => {
-  console.log("📅 Running attendance check at 9:30 AM...");
+// cron.schedule("30 9 * * *", async () => {
+//   console.log("📅 Running attendance check at 9:30 AM...");
 
-  const today = new Date().toISOString().split("T")[0];
+//   const today = new Date().toISOString().split("T")[0];
 
-  try {
-    const doctors = await Doctor.find();
+//   try {
+//     const doctors = await Doctor.find();
 
 
-    for (const doctor of doctors) {
-      const attendance = await Attendance.findOne({ doctor_id: doctor._id, date: today });
+//     for (const doctor of doctors) {
+//       const attendance = await Attendance.findOne({ doctor_id: doctor._id, date: today });
 
-      if (!attendance || !attendance.check_in) {
-        const message = `Reminder: Dr. ${doctor.doctor_name}, you have not checked in today. Please check in immediately.`;
-        sendSms(doctor.phone, message);
-        console.log(`📢 SMS alert sent to Dr. ${doctor.doctor_name}`);
+//       if (!attendance || !attendance.check_in) {
+//         const message = `Reminder: Dr. ${doctor.doctor_name}, you have not checked in today. Please check in immediately.`;
+//         sendSms(doctor.phone, message);
+//         console.log(`📢 SMS alert sent to Dr. ${doctor.doctor_name}`);
 
-      }
-    }
-  } catch (error) {
-    console.error("❌ Error checking attendance:", error);
-  }
-});
+//       }
+//     }
+//   } catch (error) {
+//     console.error("❌ Error checking attendance:", error);
+//   }
+// });
 
-console.log("✅ Attendance check scheduler started...");
+// console.log("✅ Attendance check scheduler started...");
 
 
 

@@ -55,23 +55,34 @@ function Dashboard() {
       const doctorAttendanceData = await Promise.all(
         selectedHospital.doctors.map(async (doctor) => {
           try {
-            const response = await axios.get(`http://localhost:3000/api/attendance/${doctor._id}`);
+            const response = await axios.get(`http://localhost:3000/api/getatten/${doctor._id}`);
             
-            // Check if today's attendance data exists for the doctor
-            const todayAttendance = response.data.attendance.filter(att => new Date(att.date).toISOString().split("T")[0] === new Date().toISOString().split("T")[0]);
+            // Get today's date in YYYY-MM-DD format
+            const today = new Date().toISOString().split("T")[0];
             
-            // Determine if the doctor has checked in and checked out
-            const hasCheckedInToday = todayAttendance.some(att => att.check_in);
-            const hasCheckedOutToday = todayAttendance.some(att => att.check_out);
+            // Filter today's attendance records
+            const todayAttendance = response.data.filter(att => 
+              new Date(att.date).toISOString().split("T")[0] === today
+            );
+            
+            // Find the most recent attendance record for today
+            const latestRecord = todayAttendance.sort((a, b) => 
+              new Date(b.check_in) - new Date(a.check_in)
+            )[0];
+  
+            // Determine availability
+            const isAvailable = latestRecord && 
+                              latestRecord.check_in && 
+                              !latestRecord.check_out;
   
             return { 
               doctorId: doctor._id, 
-              attendance: todayAttendance, 
-              available: hasCheckedInToday && !hasCheckedOutToday // Available if checked in but not checked out
+              attendance: latestRecord,
+              available: isAvailable
             };
           } catch (error) {
             console.error(`Error fetching attendance for Doctor ${doctor._id}:`, error);
-            return { doctorId: doctor._id, attendance: [], available: false };
+            return { doctorId: doctor._id, attendance: null, available: false };
           }
         })
       );
@@ -81,9 +92,12 @@ function Dashboard() {
   
     if (selectedHospital) {
       fetchDoctorAttendance();
+      
+      // Optional: Refresh every 5 minutes to get updated status
+      const interval = setInterval(fetchDoctorAttendance, 300000);
+      return () => clearInterval(interval);
     }
   }, [selectedHospital]);
-  
 
   // Apply filters dynamically when `locationFilter` or `serviceFilter` changes
   useEffect(() => {
@@ -183,38 +197,47 @@ function Dashboard() {
               </div>
               
               <div className='right-sec' style={{ border: "1px solid black", padding: "10px" }}>
-                <h3 style={{marginTop:"60px"}}>Doctors Available</h3>
-                {selectedHospital.doctors?.length > 0 ? (
-                  <ul>
-                  {selectedHospital.doctors?.map((doctor, index) => {
-                    const doctorAttendanceEntry = attendance.find((entry) => entry.doctorId === doctor._id);
-                    
-                    return (
-                      <li key={index}>
-                        <strong>{doctor.doctor_name}</strong> - {doctor.specialization}
-                        <br />
-                        📞 {doctor.phone} | ✉️ {doctor.doctor_email}
-                        <br />
-                        <span
-                          style={{
-                            color: doctorAttendanceEntry?.available ? "green" : "red",
-                            fontWeight: "bold",
-                            backgroundColor: doctorAttendanceEntry?.available ? "#d4f5d4" : "#f8d7da",
-                            padding: "3px 8px",
-                            borderRadius: "5px"
-                          }}
-                        >
-                          {doctorAttendanceEntry?.available ? "✅ Available" : "❌ Not Available"}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-                
-                ) : (
-                  <p>No doctors available</p>
-                )}
-              </div>
+  <h3 style={{marginTop:"60px"}}>Doctors Available</h3>
+  {selectedHospital.doctors?.length > 0 ? (
+    <ul>
+      {selectedHospital.doctors?.map((doctor, index) => {
+        const doctorAttendanceEntry = attendance.find((entry) => entry.doctorId === doctor._id);
+        const lastCheckIn = doctorAttendanceEntry?.attendance?.check_in 
+          ? new Date(doctorAttendanceEntry.attendance.check_in).toLocaleTimeString()
+          : null;
+        
+        return (
+          <li key={index} style={{marginBottom: "15px"}}>
+            <strong>{doctor.doctor_name}</strong> - {doctor.specialization}
+            <br />
+            📞 {doctor.phone} | ✉️ {doctor.doctor_email}
+            <br />
+            <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
+              <span
+                style={{
+                  color: doctorAttendanceEntry?.available ? "green" : "red",
+                  fontWeight: "bold",
+                  backgroundColor: doctorAttendanceEntry?.available ? "#d4f5d4" : "#f8d7da",
+                  padding: "3px 8px",
+                  borderRadius: "5px"
+                }}
+              >
+                {doctorAttendanceEntry?.available ? "✅ Available" : "❌ Not Available"}
+              </span>
+              {lastCheckIn && (
+                <span style={{fontSize: "0.8em", color: "#666"}}>
+                  Last checked in: {lastCheckIn}
+                </span>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  ) : (
+    <p>No doctors available</p>
+  )}
+</div>
             </div>
           </div>
         </div>

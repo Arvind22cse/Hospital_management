@@ -8,7 +8,7 @@ const session = require("express-session");
 const multer = require('multer');
 const Attendance = require("./model/attendance.model.js");
 const Doctor = require("./model/doctor.model.js");
-const uploadRoutes = require('./routes/upload.js');
+const uploadRoutes = require('./routes/up.js');
 const faceDetectRoutes = require('./facereg.js'); 
 // const faceDetectRoutes = require('./routes/facereg.js');
 

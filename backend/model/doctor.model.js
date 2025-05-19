@@ -27,6 +27,10 @@ const doctorSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PHC",
   },
+  doctor_image: {
+    type: String, // This will store the path to the image
+  },
+
 });
 
 

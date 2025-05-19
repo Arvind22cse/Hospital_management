@@ -5,7 +5,6 @@ const { addphc , deletephc, updatePhc, phcList , addDoctorToPHC}= require("../Co
 const { addvac, deletevac, updatevac, vacList } = require("../Controller/vacination.control.js")
 const { postlocation,getlocation } = require("../Controller/location.control.js")
 const { postAttendance ,getatten,postCheckOut} = require("../Controller/atten.control.js")
-const { getDiseases, getSingleDisease } = require('../Controller/disease.control.js')
 
 const router = express.Router()
 
@@ -31,7 +30,7 @@ router.post('/admin/add-vac',addvac);
 router.delete('/admin/dvac/:id',deletevac);
 router.put('/admin/uvac/:id',updatevac);
 
-router.post('/add-doctor', doctorRegister);  
+router.post('/add-doctor',upload,doctorRegister);  
 router.post("/add-doctor-phc", addDoctorToPHC);
 
 router.post('/location', postlocation);

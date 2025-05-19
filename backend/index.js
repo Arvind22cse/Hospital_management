@@ -10,7 +10,7 @@ const multer = require('multer');
 // const twilio = require("twilio");
 const Attendance = require("./model/attendance.model.js");
 const Doctor = require("./model/doctor.model.js");
-const uploadRoutes = require('./routes/upload.js');
+const uploadRoutes = require('./routes/up.js');
 const faceDetectRoutes = require('./facereg.js'); 
 // const faceDetectRoutes = require('./routes/facereg.js');
 

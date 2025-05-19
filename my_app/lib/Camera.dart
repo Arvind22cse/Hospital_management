@@ -23,14 +23,13 @@ class _FaceVerificationScreenState extends State<FaceVerificationScreen> {
   double _similarity = 0;
   CameraController? _cameraController;
   bool _isCameraReady = false;
-  Timer? _captureTimer;
-  bool _verificationInProgress = false;
+  bool _isScanning = false;
+  Timer? _scanningTimer;
 
   @override
   void initState() {
     super.initState();
     _initializeCamera();
-    _startAutoCapture();
   }
 
   Future<void> _initializeCamera() async {
@@ -58,27 +57,38 @@ class _FaceVerificationScreenState extends State<FaceVerificationScreen> {
     }
   }
 
-  void _startAutoCapture() {
-    _captureTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
-      if (!_verificationInProgress && _isCameraReady) {
+  void _startScanning() {
+    setState(() {
+      _isScanning = true;
+    });
+    // Start capturing images every 2 seconds while scanning
+    _scanningTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (_isScanning) {
         _takePicture();
+      } else {
+        timer.cancel();
       }
     });
   }
 
+  void _stopScanning() {
+    setState(() {
+      _isScanning = false;
+    });
+    _scanningTimer?.cancel();
+  }
+
   @override
   void dispose() {
-    _captureTimer?.cancel();
+    _scanningTimer?.cancel();
     _cameraController?.dispose();
     super.dispose();
   }
 
   Future<void> _takePicture() async {
-    if (!_isCameraReady || _cameraController == null || _verificationInProgress)
-      return;
+    if (!_isCameraReady || _cameraController == null || _isLoading) return;
 
     setState(() {
-      _verificationInProgress = true;
       _isLoading = true;
       _result = '';
     });
@@ -91,7 +101,6 @@ class _FaceVerificationScreenState extends State<FaceVerificationScreen> {
       setState(() {
         _isLoading = false;
         _result = 'Error capturing image';
-        _verificationInProgress = false;
       });
     }
   }
@@ -115,23 +124,25 @@ class _FaceVerificationScreenState extends State<FaceVerificationScreen> {
 
         setState(() {
           _isLoading = false;
-          _result = jsonData['message'];
+          _result =
+              jsonData['message'] ??
+              (jsonData['verified'] ? 'Verified' : 'Not Verified');
           _similarity = jsonData['similarity']?.toDouble() ?? 0;
         });
 
-        // Navigate to location screen if verification is successful
-        // In _processImage method, replace the navigation code with:
-        if (_result == 'Verified') {
+        if (jsonData['verified'] == true) {
           Navigator.pushReplacementNamed(
             context,
             '/location',
-            arguments: widget.doctorId, // Just pass the doctorId directly
+            arguments: widget.doctorId,
           );
         }
       } else {
+        final errorData = await response.stream.bytesToString();
+        final errorJson = json.decode(errorData);
         setState(() {
           _isLoading = false;
-          _result = 'Error: ${response.statusCode}';
+          _result = errorJson['error'] ?? 'Verification failed';
         });
       }
     } catch (e) {
@@ -139,49 +150,181 @@ class _FaceVerificationScreenState extends State<FaceVerificationScreen> {
         _isLoading = false;
         _result = 'Error: $e';
       });
-    } finally {
-      setState(() {
-        _verificationInProgress = false;
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Face Verification'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Face Verification'),
+        centerTitle: true,
+        backgroundColor: Colors.blue[700],
+        elevation: 0,
+      ),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Stack(
         children: [
-          if (_isCameraReady)
+          // Camera Preview with reduced width
+          if (_isCameraReady && _isScanning)
             Center(
-              child: AspectRatio(
-                aspectRatio: _cameraController!.value.aspectRatio,
-                child: CameraPreview(_cameraController!),
+              child: Container(
+                width:
+                    MediaQuery.of(context).size.width *
+                    0.9, // 70% of screen width
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blue[400]!, width: 2),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color.fromARGB(
+                        255,
+                        255,
+                        253,
+                        253,
+                      ).withOpacity(0.5),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: AspectRatio(
+                  aspectRatio: _cameraController!.value.aspectRatio,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: CameraPreview(_cameraController!),
+                  ),
+                ),
               ),
             ),
-          if (_isLoading) const Center(child: CircularProgressIndicator()),
+
+          // Initial placeholder when not scanning
+          if (!_isScanning)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.face_retouching_natural,
+                    size: 120,
+                    color: Colors.blue[300],
+                  ),
+                  const SizedBox(height: 30),
+                  const Text(
+                    'Hold the button to scan your face',
+                    style: TextStyle(
+                      fontSize: 22,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Make sure your face is well lit and centered',
+                    style: TextStyle(fontSize: 16, color: Colors.grey[400]),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+
+          // Loading indicator
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                strokeWidth: 5,
+              ),
+            ),
+
+          // Results and scan button
           Positioned(
-            bottom: 20,
+            bottom: 40,
             left: 0,
             right: 0,
             child: Column(
               children: [
+                // Verification result
                 if (_result.isNotEmpty)
-                  Text(
-                    _result,
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: _result == 'Verified' ? Colors.green : Colors.red,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      color:
+                          _result == 'Verified'
+                              ? Colors.green.withOpacity(0.9)
+                              : const Color.fromARGB(
+                                255,
+                                238,
+                                238,
+                                238,
+                              ).withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _result == 'Verified'
+                              ? Icons.check_circle
+                              : Icons.error,
+                          color: const Color.fromARGB(255, 190, 1, 1),
+                          size: 24,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          _result,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Color.fromARGB(255, 168, 0, 0),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        // if (_similarity > 0) ...[
+                        //   const SizedBox(width: 10),
+                        //   Text(
+                        //     '${_similarity.toStringAsFixed(1)}%',
+                        //     style: const TextStyle(
+                        //       fontSize: 16,
+                        //       color: Colors.white,
+                        //     ),
+                        //   ),
+                        // ],
+                      ],
                     ),
                   ),
-                if (_similarity > 0)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      'Similarity: ${_similarity.toStringAsFixed(2)}%',
-                      style: const TextStyle(fontSize: 16, color: Colors.white),
+
+                // Scan button
+                GestureDetector(
+                  onTapDown: (_) => _startScanning(),
+                  onTapUp: (_) => _stopScanning(),
+                  onTapCancel: () => _stopScanning(),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: _isScanning ? 120 : 100,
+                    height: _isScanning ? 120 : 100,
+                    decoration: BoxDecoration(
+                      color: _isScanning ? Colors.red : Colors.blue[700],
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      _isScanning ? Icons.stop : Icons.fingerprint,
+                      size: _isScanning ? 50 : 40,
+                      color: Colors.white,
                     ),
                   ),
+                ),
               ],
             ),
           ),

@@ -25,8 +25,8 @@ function Layout() {
         <Route path="/login" element={<Signin />} />
         <Route path="/doctor-dashboard" element={<Doctordashboard />} />
         <Route path="/signup" element={<Signup/>}/>
-        <Route path="/admin" element={<Admindashboard/>}/>
-        <Route path="/admindoctor" element={<AdminDoctor/>} />
+        <Route path="/admin-nav" element={<Admindashboard/>}/>
+        <Route path="/admin" element={<AdminDoctor/>} />
         <Route path="/adminhospital" element={<AdminHospital/>}/>
         <Route path="/adminvaccine" element={<AdminVaccine/>}/>
         <Route path='/adminhosp' element={<AdminHosp/>}/>

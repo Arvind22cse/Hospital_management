@@ -24,12 +24,16 @@ app.use(express.urlencoded({ extended: true }));
 //   origin: 'http://localhost:3001', // Allow only your frontend origin
 //   credentials: true, // Allow credentials (cookies, authorization headers)
 // };
+
+
 app.use(
   cors({
     origin: "http://localhost:5173", // Allow only your frontend origin
     credentials: true, // Allow cookies and credentials
   })
 );
+
+
 // app.use(cors());
 
 // app.use(

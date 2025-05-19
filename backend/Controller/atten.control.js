@@ -1,7 +1,7 @@
 // In your location.controller.js or a similar file
 
 const mongoose = require("mongoose");
-const Attendance = require("../model/atten.model.js"); // Your attendance model
+const Attendance = require("../model/atten.model"); // Your attendance model
 
 const postAttendance = async (req, res) => {
     try {
@@ -15,11 +15,12 @@ const postAttendance = async (req, res) => {
         return res.status(400).json({ message: "Invalid or missing location address." });
       }
   
-      const validAddress = "Your current location:\nPerundurai, Erode, Tamil Nadu, 638052, India";
+      // const validAddress = "Your current location:\nPerundurai, Erode, Tamil Nadu, 638052, India";
   
-      if (address.trim() !== validAddress.trim()) {
+      if (!address.includes("Perundurai") || !address.includes("Tamil Nadu")) {
         return res.status(403).json({ message: "Unauthorized location. Attendance not allowed." });
       }
+      
   
       const date = new Date().toISOString().split("T")[0];
   
@@ -89,19 +90,34 @@ const postAttendance = async (req, res) => {
   };
   
 
-const getatten = async (req, res) => {
-    try {
-      const { doctorId } = req.params; // Get doctorId from URL params
-      const attendance = await Attendance.find({ doctorId }); // Find attendance for the specific doctor
-      if (!attendance || attendance.length === 0) {
-        return res.status(404).json({ message: "No attendance records found for this doctor" });
-      }
-      res.status(200).json(attendance);
-    } catch (err) {
-      console.log(err);
-      res.status(500).send("Error fetching attendance data");
-    }
-  };
+// const getatten = async (req, res) => {
+//     try {
+//       const { doctorId } = req.params; // Get doctorId from URL params
+//       const attendance = await Attendance.find({ doctorId }); // Find attendance for the specific doctor
+//       if (!attendance || attendance.length === 0) {
+//         return res.status(404).json({ message: "No attendance records found for this doctor" });
+//       }
+//       res.status(200).json(attendance);
+//     } catch (err) {
+//       console.log(err);
+//       res.status(500).send("Error fetching attendance data");
+//     }
+//   };
   
+const getatten = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const attendance = await Attendance.find({ doctorId }).sort({ date: 1 });
+
+    if (!attendance || attendance.length === 0) {
+      return res.status(404).json({ message: "No attendance records found for this doctor" });
+    }
+
+    res.status(200).json(attendance);
+  } catch (err) {
+    console.log("❌ Error in getatten:", err);
+    res.status(500).send("Error fetching attendance data");
+  }
+};
 
 module.exports = { postAttendance ,getatten ,postCheckOut};

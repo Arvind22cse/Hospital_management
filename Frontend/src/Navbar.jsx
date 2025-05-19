@@ -15,6 +15,11 @@ const Navbar = () => {
 
       <ul className={mobileMenu ? "nav-links nav-active" : "nav-links"}>
         <li>
+          <button className="avatar-link" onClick={() => navigate("/general")}>
+            ho
+          </button>
+        </li>
+        <li>
           <div className="avatar-link" onClick={() => navigate("/login", { state: { defaultUser: "Doctor" } })}>
             <img
               src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"

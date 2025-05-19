@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './Dashboard.css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Phone, Clock, X, ChevronRight, VoteIcon as Vaccine, Calendar, Info, User, CheckCircle, XCircle } from 'lucide-react';
 
-function Dashboard() {
+export default function Dashboard() {
   const [hospitals, setHospitals] = useState([]);
   const [filteredHospitals, setFilteredHospitals] = useState([]);
   const [locationFilter, setLocationFilter] = useState('');
@@ -12,10 +13,12 @@ function Dashboard() {
   const [selectedHospital, setSelectedHospital] = useState(null);
   const [vaccines, setVaccines] = useState([]);
   const [attendance, setAttendance] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch hospitals data and related filters (location, services)
   useEffect(() => {
     const fetchHospitals = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.get("http://localhost:3002/api/list-phc");
         setHospitals(response.data);
@@ -28,6 +31,8 @@ function Dashboard() {
         setServices(uniqueServices);
       } catch (err) {
         console.error("Error fetching hospitals:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -93,7 +98,7 @@ function Dashboard() {
     if (selectedHospital) {
       fetchDoctorAttendance();
       
-      // Optional: Refresh every 5 minutes to get updated status
+      // Refresh every 5 minutes to get updated status
       const interval = setInterval(fetchDoctorAttendance, 300000);
       return () => clearInterval(interval);
     }
@@ -121,129 +126,347 @@ function Dashboard() {
   }, [locationFilter, serviceFilter, hospitals]);
 
   return (
-    <div className='dashboard-wrapper'>
-      <div className='left-section'>
-        <div className='dashboard-container'>
-          <h2>Hospitals Near You</h2>
+    <div className="dashboard-wrapper">
+      <div className="left-section">
+        <div className="dashboard-container">
+          <motion.h2 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="dashboard-title"
+          >
+            Hospitals Near You
+          </motion.h2>
 
-          <div className='filters'>
-            <select className='filter-select' value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
-              <option value=''>Select Location</option>
-              {locations.map((location, index) => (
-                <option key={index} value={location}>{location}</option>
-              ))}
-            </select>
+          <motion.div 
+            className="filters"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <div className="filter-group">
+              <select 
+                className="filter-select" 
+                value={locationFilter} 
+                onChange={(e) => setLocationFilter(e.target.value)}
+              >
+                <option value="">All Locations</option>
+                {locations.map((location, index) => (
+                  <option key={index} value={location}>{location}</option>
+                ))}
+              </select>
+            </div>
 
-            <select className='filter-select' value={serviceFilter} onChange={(e) => setServiceFilter(e.target.value)}>
-              <option value=''>Select Service</option>
-              {services.map((service, index) => (
-                <option key={index} value={service}>{service}</option>
-              ))}
-            </select>
-          </div>
+            <div className="filter-group">
+              
+              <select 
+                className="filter-select" 
+                value={serviceFilter} 
+                onChange={(e) => setServiceFilter(e.target.value)}
+              >
+                <option value="">All Services</option>
+                {services.map((service, index) => (
+                  <option key={index} value={service}>{service}</option>
+                ))}
+              </select>
+            </div>
+          </motion.div>
 
-          <div className='hospital-cards-container'>
-            {filteredHospitals.map((hospital) => (
-              <div key={hospital._id} className='hospital-card'>
-                <img
-                  src="https://img.freepik.com/free-vector/people-walking-sitting-hospital-building-city-clinic-glass-exterior-flat-vector-illustration-medical-help-emergency-architecture-healthcare-concept_74855-10130.jpg"
-                  alt={hospital.name}
-                  className='hospital-image'
-                />
-                <h3>{hospital.name}</h3>
-                <p>{hospital.location}</p>
-                <button onClick={() => setSelectedHospital(hospital)}>Read More</button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className='right-section'>
-        <div className='row' style={{ marginTop: "50px" }}>
-          <h1 style={{ marginLeft: "10%" }}>Vaccination Updates</h1>
-          <div className='vaccine-cards-container'>
-            {vaccines.length > 0 ? (
-              vaccines.map((vaccine) => (
-                <div key={vaccine._id} className='vaccine-card' style={{ backgroundColor: "#5e5e5d", marginTop: "20px", width: "90%", marginLeft: "10px" }}>
-                  <h3 style={{ color: "white" }}>{vaccine.vaccine_name}</h3>
-                  <p style={{ color: "white" }}><strong>Age Requirement:</strong> {vaccine.required_age}+</p>
-                  <p style={{ color: "white" }}><strong>Location:</strong> {vaccine.location}</p>
-                  <p style={{ color: "white" }}><strong>Date:</strong> {vaccine.from_date} - {vaccine.last_date}</p>
-                  <p style={{ color: "white" }}><strong>Description:</strong> {vaccine.description}</p>
-                  <button>Register</button>
-                </div>
-              ))
-            ) : (
-              <p style={{ marginLeft: "99px", marginTop: "50px" }}>No vaccine updates available</p>
+          <div className="hospital-cards-container">
+            <AnimatePresence>
+              {isLoading ? (
+                Array(6).fill(0).map((_, index) => (
+                  <motion.div 
+                    key={`skeleton-${index}`}
+                    className="hospital-card skeleton"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                  >
+                    <div className="skeleton-image"></div>
+                    <div className="skeleton-title"></div>
+                    <div className="skeleton-text"></div>
+                    <div className="skeleton-button"></div>
+                  </motion.div>
+                ))
+              ) : (
+                filteredHospitals.map((hospital, index) => (
+                  <motion.div 
+                    key={hospital._id}
+                    className="hospital-card"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    whileHover={{ 
+                      y: -10, 
+                      boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
+                      transition: { duration: 0.2 }
+                    }}
+                  >
+                    <div className="card-image-container">
+                      <img
+                        src="https://img.freepik.com/free-vector/people-walking-sitting-hospital-building-city-clinic-glass-exterior-flat-vector-illustration-medical-help-emergency-architecture-healthcare-concept_74855-10130.jpg"
+                        alt={hospital.name}
+                        className="hospital-image"
+                      />
+                      <div className="card-overlay">
+                        <span className="hospital-type">{hospital.type || 'Hospital'}</span>
+                      </div>
+                    </div>
+                    <h3 className="hospital-name">{hospital.name}</h3>
+                    <p className="hospital-location">
+                      <MapPin size={14} className="location-icon" />
+                      {hospital.location}
+                    </p>
+                    <button 
+                      className="view-details-btn"
+                      onClick={() => setSelectedHospital(hospital)}
+                    >
+                      View Details
+                      <ChevronRight size={16} />
+                    </button>
+                  </motion.div>
+                ))
+              )}
+            </AnimatePresence>
+            
+            {!isLoading && filteredHospitals.length === 0 && (
+              <motion.div 
+                className="no-results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <p>No hospitals match your filters. Try adjusting your criteria.</p>
+              </motion.div>
             )}
           </div>
         </div>
       </div>
 
-      {selectedHospital && (
-        <div className='modal-overlay' onClick={() => setSelectedHospital(null)}>
-          <div className='modal-content' onClick={(e) => e.stopPropagation()}>
-            <button className='close-btn' onClick={() => setSelectedHospital(null)}>X</button>
-            
-            <div className='hospital-detail-wrapper'>
-              <div className='left-sec' style={{ marginLeft: "150px" }}>
-                <h2>{selectedHospital.name}</h2>
-                <p><strong>Location:</strong> {selectedHospital.location}</p>
-                <p><strong>Type:</strong> {selectedHospital.type}</p>
-                <p><strong>Contact:</strong> {selectedHospital.contact_info}</p>
-                <p><strong>Services:</strong> {selectedHospital.services?.join(', ') || 'N/A'}</p>
-                <p><strong>Facilities:</strong> {selectedHospital.facilities?.join(', ') || 'N/A'}</p>
-              </div>
-              
-              <div className='right-sec' style={{ border: "1px solid black", padding: "10px" }}>
-  <h3 style={{marginTop:"60px"}}>Doctors Available</h3>
-  {selectedHospital.doctors?.length > 0 ? (
-    <ul>
-      {selectedHospital.doctors?.map((doctor, index) => {
-        const doctorAttendanceEntry = attendance.find((entry) => entry.doctorId === doctor._id);
-        const lastCheckIn = doctorAttendanceEntry?.attendance?.check_in 
-          ? new Date(doctorAttendanceEntry.attendance.check_in).toLocaleTimeString()
-          : null;
-        
-        return (
-          <li key={index} style={{marginBottom: "15px"}}>
-            <strong>{doctor.doctor_name}</strong> - {doctor.specialization}
-            <br />
-            📞 {doctor.phone} | ✉️ {doctor.doctor_email}
-            <br />
-            <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
-              <span
-                style={{
-                  color: doctorAttendanceEntry?.available ? "green" : "red",
-                  fontWeight: "bold",
-                  backgroundColor: doctorAttendanceEntry?.available ? "#d4f5d4" : "#f8d7da",
-                  padding: "3px 8px",
-                  borderRadius: "5px"
-                }}
-              >
-                {doctorAttendanceEntry?.available ? "✅ Available" : "❌ Not Available"}
-              </span>
-              {lastCheckIn && (
-                <span style={{fontSize: "0.8em", color: "#666"}}>
-                  Last checked in: {lastCheckIn}
-                </span>
+      <div className="right-section">
+        <motion.div 
+          className="vaccine-updates"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <h2 className="section-title">
+            <Vaccine className="section-icon" />
+            Vaccination Updates
+          </h2>
+          
+          <div className="vaccine-cards-container">
+            <AnimatePresence>
+              {vaccines.length > 0 ? (
+                vaccines.map((vaccine, index) => (
+                  <motion.div 
+                    key={vaccine._id} 
+                    className="vaccine-card"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    whileHover={{ 
+                      scale: 1.02,
+                      boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
+                      transition: { duration: 0.2 }
+                    }}
+                  >
+                    <div className="vaccine-header">
+                      <h3>{vaccine.vaccine_name}</h3>
+                      <span className="age-badge">{vaccine.required_age}+ years</span>
+                    </div>
+                    <div className="vaccine-details">
+                      <p className="vaccine-info">
+                        <MapPin size={14} className="info-icon" />
+                        {vaccine.location}
+                      </p>
+                      <p className="vaccine-info">
+                        <Calendar size={14} className="info-icon" />
+                        {vaccine.from_date} - {vaccine.last_date}
+                      </p>
+                      <p className="vaccine-description">{vaccine.description}</p>
+                    </div>
+                    <button className="register-btn">Register Now</button>
+                  </motion.div>
+                ))
+              ) : (
+                <motion.div 
+                  className="no-vaccines"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <p>No vaccine updates available at this time</p>
+                </motion.div>
               )}
-            </div>
-          </li>
-        );
-      })}
-    </ul>
-  ) : (
-    <p>No doctors available</p>
-  )}
-</div>
-            </div>
+            </AnimatePresence>
           </div>
-        </div>
-      )}
+        </motion.div>
+      </div>
+
+      <AnimatePresence>
+        {selectedHospital && (
+          <motion.div 
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedHospital(null)}
+          >
+            <motion.div 
+              className="modal-content"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                className="close-btn"
+                onClick={() => setSelectedHospital(null)}
+                aria-label="Close modal"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="hospital-detail-wrapper">
+                <div className="left-sec">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <h2 className="hospital-detail-title">{selectedHospital.name}</h2>
+                    
+                    <div className="hospital-info-grid">
+                      <div className="info-item">
+                        <MapPin className="info-icon" />
+                        <div>
+                          <h4>Location</h4>
+                          <p>{selectedHospital.location}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="info-item">
+                        <Info className="info-icon" />
+                        <div>
+                          <h4>Type</h4>
+                          <p>{selectedHospital.type || 'General Hospital'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="info-item">
+                        <Phone className="info-icon" />
+                        <div>
+                          <h4>Contact</h4>
+                          <p>{selectedHospital.contact_info || 'Not available'}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="services-section">
+                      <h3>Services</h3>
+                      <div className="tags-container">
+                        {selectedHospital.services?.map((service, index) => (
+                          <span key={index} className="service-tag">{service}</span>
+                        )) || <p>No services listed</p>}
+                      </div>
+                    </div>
+                    
+                    <div className="facilities-section">
+                      <h3>Facilities</h3>
+                      <div className="tags-container">
+                        {selectedHospital.facilities?.map((facility, index) => (
+                          <span key={index} className="facility-tag">{facility}</span>
+                        )) || <p>No facilities listed</p>}
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+                
+                <div className="right-sec">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                  >
+                    <h3 className="doctors-title">
+                      <User className="section-icon" />
+                      Doctors Available
+                    </h3>
+                    
+                    {selectedHospital.doctors?.length > 0 ? (
+                      <ul className="doctors-list">
+                        {selectedHospital.doctors?.map((doctor, index) => {
+                          const doctorAttendanceEntry = attendance.find((entry) => entry.doctorId === doctor._id);
+                          const lastCheckIn = doctorAttendanceEntry?.attendance?.check_in 
+                            ? new Date(doctorAttendanceEntry.attendance.check_in).toLocaleTimeString()
+                            : null;
+                          
+                          return (
+                            <motion.li 
+                              key={index} 
+                              className="doctor-item"
+                              initial={{ opacity: 0, x: 20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ duration: 0.3, delay: 0.1 + index * 0.1 }}
+                            >
+                              <div className="doctor-header">
+                                <h4 className="doctor-name">{doctor.doctor_name}</h4>
+                                <span className="doctor-specialty">{doctor.specialization}</span>
+                              </div>
+                              
+                              <div className="doctor-contact">
+                                <span className="contact-item">
+                                  <Phone size={14} />
+                                  {doctor.phone}
+                                </span>
+                                <span className="contact-item">
+                                  <span className="email-icon">✉️</span>
+                                  {doctor.doctor_email}
+                                </span>
+                              </div>
+                              
+                              <div className="availability-section">
+                                <div className={`availability-badge ${doctorAttendanceEntry?.available ? 'available' : 'unavailable'}`}>
+                                  {doctorAttendanceEntry?.available ? (
+                                    <>
+                                      <CheckCircle size={16} />
+                                      <span>Available</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <XCircle size={16} />
+                                      <span>Not Available</span>
+                                    </>
+                                  )}
+                                </div>
+                                
+                                {lastCheckIn && (
+                                  <div className="last-checkin">
+                                    <Clock size={14} />
+                                    <span>Last checked in: {lastCheckIn}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </motion.li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <p className="no-doctors">No doctors available at this time</p>
+                    )}
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-
-export default Dashboard;

@@ -5,6 +5,7 @@ const { addphc , deletephc, updatePhc, phcList , addDoctorToPHC}= require("../Co
 const { addvac, deletevac, updatevac, vacList } = require("../Controller/vacination.control.js")
 const { postlocation,getlocation } = require("../Controller/location.control.js")
 const { postAttendance ,getatten,postCheckOut} = require("../Controller/atten.control.js")
+const { getDiseases, getSingleDisease } = require('../Controller/disease.control.js')
 
 const router = express.Router()
 
@@ -35,5 +36,10 @@ router.post("/add-doctor-phc", addDoctorToPHC);
 
 router.post('/location', postlocation);
 router.get('/getlocation', getlocation);
+
+
+router.get('/diseases', getDiseases);
+router.get('/disease/:id', getSingleDisease);
+
 
 module.exports = router;

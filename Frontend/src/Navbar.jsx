@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiLogOut, FiMenu, FiX } from "react-icons/fi";
+import { FiLogOut, FiMenu, FiX, FiHelpCircle } from "react-icons/fi";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -15,9 +15,12 @@ const Navbar = () => {
 
       <ul className={mobileMenu ? "nav-links nav-active" : "nav-links"}>
         <li>
-          <button className="avatar-link" onClick={() => navigate("/general")}>
-            ho
-          </button>
+          <div className="avatar-link" onClick={() => navigate("/general")}>
+            <FiHelpCircle size={40} />
+          </div>
+        </li>
+        <li>
+          
         </li>
         <li>
           <div className="avatar-link" onClick={() => navigate("/login", { state: { defaultUser: "Doctor" } })}>
@@ -29,8 +32,6 @@ const Navbar = () => {
           </div>
         </li>
       </ul>
-
-      
     </nav>
   );
 };

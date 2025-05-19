@@ -45,14 +45,14 @@ const Signin = () => {
   
     if (userType === "Admin" && email === "admin@gmail.com" && password === "123") {
       console.log("Admin Login Successful");
-      navigate("/admin"); // Redirect to admin dashboard
+      navigate("/admindoctor"); // Redirect to admin dashboard
       return;
     }
   else{
     
   }
     try {
-      const response = await axios.post("http://localhost:3000/api/doctor-login", { email, password });
+      const response = await axios.post("http://localhost:3002/api/doctor-login", { email, password });
   
       if (response.status === 200) {
         console.log("Doctor Login Successful:", response.data);

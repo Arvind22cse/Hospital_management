@@ -10,7 +10,7 @@ const DoctorNavbar = () => {
   const doctorAvatar = localStorage.getItem("doctorAvatar");
 
   const handleLogout = async () => {
-    await axios.get("http://localhost:3000/api/doctor-logout");
+    await axios.get("http://localhost:3002/api/doctor-logout");
     localStorage.clear();  // Clear stored doctor details
     navigate("/");  // Redirect to login page
   };

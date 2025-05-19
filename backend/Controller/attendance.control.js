@@ -1,39 +1,46 @@
 const doctorModel = require("../model/doctor.model.js");
 const attendanceModel = require("../model/attendance.model.js");
+const locationModel = require("../model/location.model.js"); // Import location model
 
-
-
-// Mark Attendance (Check-in)
 const markAttendance = async (req, res) => {
   try {
-    if (!req.body.doctorId) {
-        return res.status(401).json({ message: "Unauthorized. Please log in." });
+    const { doctorId, address } = req.body;
+  
+    if (!doctorId) {
+      return res.status(401).json({ message: "Unauthorized. Please log in." });
     }
 
-    const doctorId = req.session.doctorId || req.body.doctorId; // Get doctorId from session
-    const date = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
-    const check_in = new Date().toLocaleTimeString(); // Current Time
+    if (!address) {
+      return res.status(400).json({ message: "Location address is required." });
+    }
 
-    // Check if already checked in today
+    // ✅ Step 1: Check if address exists in DB (authorized zone)
+    const validLocation = await locationModel.findOne({ address });
+
+    if (!validLocation) {
+      return res.status(403).json({ message: "Unauthorized location. Attendance not allowed." });
+    }
+
+    const date = new Date().toISOString().split("T")[0];
+    const check_in = new Date();
+    // ✅ Step 2: Prevent duplicate entries
     const existingAttendance = await attendanceModel.findOne({ doctor_id: doctorId, date });
     if (existingAttendance) {
-      console.log("Already checked in today" )
       return res.status(400).json({ message: "Already checked in today" });
     }
 
-    // Create new attendance entry
+    // ✅ Step 3: Save attendance
     const attendance = new attendanceModel({ doctor_id: doctorId, date, check_in });
     await attendance.save();
 
     res.status(200).json({ message: "Check-in successful", attendance });
   } catch (error) {
-    console.log(error);
+    console.error("Error in markAttendance:", error);
     res.status(500).json({ message: "Error marking attendance" });
   }
 };
 
-
-
+module.exports = { markAttendance };
 // Mark Check-out
 const markCheckOut = async (req, res) => {
   try {

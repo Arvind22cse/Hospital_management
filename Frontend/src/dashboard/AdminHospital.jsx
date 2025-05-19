@@ -28,7 +28,7 @@ function AdminHosp() {
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/list-phc");
+        const response = await axios.get("http://localhost:3002/api/list-phc");
         const hospitalData = response.data;
 
         setHospitals(hospitalData);
@@ -68,7 +68,7 @@ function AdminHosp() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/admin/dphc/${id}`);
+      await axios.delete(`http://localhost:3002/api/admin/dphc/${id}`);
       setHospitals(hospitals.filter(hospital => hospital._id !== id));
       setFilteredHospitals(filteredHospitals.filter(hospital => hospital._id !== id));
 
@@ -108,11 +108,11 @@ function AdminHosp() {
     try {
       if (selectedHospital) {
         // Update existing hospital
-        await axios.put(`http://localhost:3000/api/hospitals/${selectedHospital._id}`, formattedData);
+        await axios.put(`http://localhost:3002/api/hospitals/${selectedHospital._id}`, formattedData);
         alert("Hospital updated successfully!");
       } else {
         // Add new hospital
-        await axios.post("http://localhost:3000/api/hospitals", formattedData);
+        await axios.post("http://localhost:3002/api/hospitals", formattedData);
         alert("Hospital added successfully!");
       }
 

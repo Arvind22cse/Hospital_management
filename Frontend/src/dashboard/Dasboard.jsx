@@ -17,7 +17,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/list-phc");
+        const response = await axios.get("http://localhost:3002/api/list-phc");
         setHospitals(response.data);
         setFilteredHospitals(response.data);
 
@@ -38,7 +38,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchVaccines = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/list-vac");
+        const response = await axios.get("http://localhost:3002/api/list-vac");
         setVaccines(response.data);
       } catch (err) {
         console.error("Error fetching vaccines:", err);
@@ -55,7 +55,7 @@ function Dashboard() {
       const doctorAttendanceData = await Promise.all(
         selectedHospital.doctors.map(async (doctor) => {
           try {
-            const response = await axios.get(`http://localhost:3000/api/getatten/${doctor._id}`);
+            const response = await axios.get(`http://localhost:3002/api/getatten/${doctor._id}`);
             
             // Get today's date in YYYY-MM-DD format
             const today = new Date().toISOString().split("T")[0];

@@ -32,7 +32,7 @@ const Signup = () => {
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:3000/api/add-doctor", formData);
+      const response = await axios.post("http://localhost:3002/api/add-doctor", formData);
       console.log("Signup Successful", response.data);
       navigate("/login");
     } catch (error) {

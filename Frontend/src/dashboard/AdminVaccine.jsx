@@ -24,7 +24,7 @@ function VaccineCard() {
 
   const fetchVaccines = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/list-vac");
+      const response = await axios.get("http://localhost:3002/api/list-vac");
       setVaccines(response.data);
     } catch (error) {
       console.error("Error fetching vaccine details:", error);
@@ -34,7 +34,7 @@ function VaccineCard() {
   const handleAddVaccine = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3000/api/admin/add-vac", formData);
+      await axios.post("http://localhost:3002/api/admin/add-vac", formData);
       fetchVaccines(); // Refresh list
       setFormData({
         vaccine_name: "",
@@ -66,7 +66,7 @@ function VaccineCard() {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:3000/api/admin/uvac/${editingVaccine}`, formData);
+      await axios.put(`http://localhost:3002/api/admin/uvac/${editingVaccine}`, formData);
       setEditingVaccine(null);
       fetchVaccines(); // Refresh vaccine list
       toast.success("Vaccine updated successfully!");
@@ -78,7 +78,7 @@ function VaccineCard() {
 
   const deleteVaccine = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/admin/dvac/${id}`);
+      await axios.delete(`http://localhost:3002/api/admin/dvac/${id}`);
       setVaccines(vaccines.filter((vaccine) => vaccine._id !== id));
       toast.success("Vaccine deleted successfully!");
     } catch (error) {

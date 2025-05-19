@@ -12,7 +12,7 @@ const DoctorNavbar = () => {
   const handleLogout = async () => {
     await axios.get("http://localhost:3002/api/doctor-logout");
     localStorage.clear();  // Clear stored doctor details
-    navigate("/login");  // Redirect to login page
+    navigate("/");  // Redirect to login page
   };
 
   return (

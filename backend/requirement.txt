@@ -9,4 +9,5 @@ npm install body-parser
 npm install express-session
 npm install node-cron dotenv mongoose axios
 
+npm install multer
 

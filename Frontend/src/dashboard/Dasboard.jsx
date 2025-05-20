@@ -290,7 +290,7 @@ export default function Dashboard() {
                       </p>
                       <p className="vaccine-description">{vaccine.description}</p>
                     </div>
-                    <button className="register-btn">Register Now</button>
+                   
                   </motion.div>
                 ))
               ) : (

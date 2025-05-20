@@ -2,6 +2,12 @@ const { response } = require("express");
 const mongoose = require("mongoose");
 const phcModel = require("../model/phc.model.js");
 const doctorModel = require("../model/doctor.model.js");
+const twilio = require("twilio");
+
+const client = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
 //add - phc
 const addphc = async (req, res) => {
@@ -101,6 +107,28 @@ const phcList = async (req, res) => {
 };
 
 
+const msgdoctor = async (docname,docphone, phcname,phclocation) => {
+
+  // console.log(phone)
+  message = `Hello Dr. ${docname}, you have been added to PHC ${phcname} located at ${phclocation}. Please contact the PHC for further details.`;
+  try {
+    const response = await client.messages.create({
+      body: message,
+      from:process.env.TWILIO_PHONE_NUMBER,
+      to: docphone,
+    });
+
+    console.log(`✅ SMS sent to ${docphone}: ${response.sid}`);
+    return response;
+  } catch (error) {
+    console.error(`❌ Error sending SMS to ${docphone}:`, error.message);
+    throw error;
+  }
+};
+
+
+
+
 // Add Doctor to a PHC using name
 const addDoctorToPHC = async (req, res) => {
   try {
@@ -122,11 +150,13 @@ const addDoctorToPHC = async (req, res) => {
     doctor.phc = phc._id;
     await doctor.save();
 
+    msgdoctor(doctor.doctor_name,doctor.phone, phc.name,phc.location);
+
     if (!phc.doctors.includes(doctor._id)) {
       phc.doctors.push(doctor._id);
       await phc.save();
     }
-    
+
     res
       .status(200)
       .json({ message: `Doctor ${doctor_name} added to PHC ${name}`, phc });

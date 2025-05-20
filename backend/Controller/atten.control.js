@@ -17,7 +17,7 @@ const postAttendance = async (req, res) => {
   
       // const validAddress = "Your current location:\nPerundurai, Erode, Tamil Nadu, 638052, India";
   
-      if (!address.includes("Perundurai") || !address.includes("Tamil Nadu")) {
+      if (!address.includes("641001") &&!address.includes("Coimbatore") && !address.includes("Tamil Nadu")) {
         return res.status(403).json({ message: "Unauthorized location. Attendance not allowed." });
       }
       

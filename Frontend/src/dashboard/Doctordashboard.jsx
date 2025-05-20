@@ -20,6 +20,17 @@ const Doctordashboard = () => {
   useEffect(() => {
     fetchAttendance();
   }, []);
+  const formatTo12Hour = (isoString) => {
+    if (!isoString) return "N/A";
+    const date = new Date(isoString);
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12; // Convert 0 to 12 for 12-hour format
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    return `${hours}:${paddedMinutes} ${ampm}`;
+  };
+  
 
   const fetchAttendance = async () => {
     try {

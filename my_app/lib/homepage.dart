@@ -70,7 +70,7 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.deepPurple,
-        title: const Text("My App", style: TextStyle(color: Colors.white)),
+        title: const Text("Doctor App", style: TextStyle(color: Colors.white)),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -92,16 +92,16 @@ class _HomeState extends State<Home> {
               ),
               itemBuilder:
                   (BuildContext context) => [
-                    const PopupMenuItem<String>(
-                      value: 'profile',
-                      child: Row(
-                        children: [
-                          Icon(Icons.person, color: Colors.deepPurple),
-                          SizedBox(width: 8),
-                          Text('Profile'),
-                        ],
-                      ),
-                    ),
+                    // const PopupMenuItem<String>(
+                    //   value: 'profile',
+                    //   child: Row(
+                    //     children: [
+                    //       Icon(Icons.person, color: Colors.deepPurple),
+                    //       SizedBox(width: 8),
+                    //       Text('Profile'),
+                    //     ],
+                    //   ),
+                    // ),
                     const PopupMenuItem<String>(
                       value: 'attendance',
                       child: Row(
@@ -183,7 +183,7 @@ class _HomeState extends State<Home> {
                       ],
                     )
                     : Text(
-                      "Good Morning Arvind!!!\n\n\n"
+                      "Good Morning !!!\n\n\n"
                       "Mark your presence",
                       style: Theme.of(
                         context,

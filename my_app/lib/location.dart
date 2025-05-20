@@ -246,7 +246,7 @@ class _LocationTrackerState extends State<LocationTracker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Location Tracker")),
+      appBar: AppBar(title: Text("Doctor Attendance")),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -258,7 +258,7 @@ class _LocationTrackerState extends State<LocationTracker> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Location Tracker",
+                    "Mark Attendance",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -332,7 +332,7 @@ class _LocationTrackerState extends State<LocationTracker> {
                                 Text("Sending..."),
                               ],
                             )
-                            : Text("Send Data to Server"),
+                            : Text("Send Location to Server"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       padding: EdgeInsets.symmetric(
@@ -360,7 +360,7 @@ class _LocationTrackerState extends State<LocationTracker> {
                                 Text("Marking Attendance..."),
                               ],
                             )
-                            : Text("Mark Attendance"),
+                            : Text("Check-in"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       padding: EdgeInsets.symmetric(
@@ -388,7 +388,7 @@ class _LocationTrackerState extends State<LocationTracker> {
                                 Text("Marking Check-Out..."),
                               ],
                             )
-                            : Text("Mark Check-Out"),
+                            : Text("Check-Out"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       padding: EdgeInsets.symmetric(

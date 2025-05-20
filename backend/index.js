@@ -6,9 +6,10 @@ const dotenv = require("dotenv").config();
 const router = require("./routes/route.js");
 const session = require("express-session");
 const multer = require("multer");
-// const cron = require("node-cron");
-// const twilio = require("twilio");
-const Attendance = require("./model/attendance.model.js");
+const cron = require("node-cron");
+const twilio = require("twilio");
+// const Attendance = require("./model/attendance.model.js");
+const Attendance = require("./model/atten.model.js");
 const Doctor = require("./model/doctor.model.js");
 const uploadRoutes = require("./routes/up.js");
 const faceDetectRoutes = require("./facereg.js");
@@ -16,10 +17,10 @@ const faceDetectRoutes = require("./facereg.js");
 
 //hi
 
-// const client = twilio(
-//     process.env.TWILIO_ACCOUNT_SID,
-//     process.env.TWILIO_AUTH_TOKEN
-//   );
+const client = twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+  );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -80,48 +81,49 @@ mongoose
   });
 
 // Function to send SMS via Twilio
-// // const sendSms = async (phone, message) => {
+const sendSms = async (phone, message) => {
 
-// //   try {
-// //     const response = await client.messages.create({
-// //       body: message,
-// //       from:process.env.TWILIO_PHONE_NUMBER,
-// //       to: phone,
-// //     });
+  console.log(phone)
+  try {
+    const response = await client.messages.create({
+      body: message,
+      from:process.env.TWILIO_PHONE_NUMBER,
+      to: phone,
+    });
 
-// //     console.log(`✅ SMS sent to ${phone}: ${response.sid}`);
-// //     return response;
-// //   } catch (error) {
-// //     console.error(`❌ Error sending SMS to ${phone}:`, error.message);
-// //     throw error;
-// //   }
-// // };
+    console.log(`✅ SMS sent to ${phone}: ${response.sid}`);
+    return response;
+  } catch (error) {
+    console.error(`❌ Error sending SMS to ${phone}:`, error.message);
+    throw error;
+  }
+};
 
-// // Cron job runs every day at 9:30 AM
-// // cron.schedule("30 9 * * *", async () => {
-// //   console.log("📅 Running attendance check at 9:30 AM...");
+// Cron job runs every day at 9:30 AM
+cron.schedule("09 10 * * *", async () => {
+  console.log("📅 Running attendance check at 9:30 AM...");
 
-// //   const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split("T")[0];
 
-// //   try {
-// //     const doctors = await Doctor.find();
+  try {
+    const doctors = await Doctor.find();
 
-// //     for (const doctor of doctors) {
-// //       const attendance = await Attendance.findOne({ doctor_id: doctor._id, date: today });
+    for (const doctor of doctors) {
+      const attendance = await Attendance.findOne({ doctor_id: doctor._id, date: today });
 
-// //       if (!attendance || !attendance.check_in) {
-// //         const message = `Reminder: Dr. ${doctor.doctor_name}, you have not checked in today. Please check in immediately.`;
-// //         sendSms(doctor.phone, message);
-// //         console.log(`📢 SMS alert sent to Dr. ${doctor.doctor_name}`);
+      if (!attendance || !attendance.check_in) {
+        const message = `Reminder: Dr. ${doctor.doctor_name}, you have not checked in today. Please check in immediately.`;
+        sendSms(doctor.phone, message);
+        console.log(`📢 SMS alert sent to Dr. ${doctor.doctor_name}`);
 
-// //       }
-// //     }
-// //   } catch (error) {
-// //     console.error("❌ Error checking attendance:", error);
-// //   }
-// // });
+      }
+    }
+  } catch (error) {
+    console.error("❌ Error checking attendance:", error);
+  }
+});
 
-// // console.log("✅ Attendance check scheduler started...");
+console.log("✅ Attendance check scheduler started...");
 
 app.listen(3002, "0.0.0.0", () => {
   console.log("Server is running on port 3002");

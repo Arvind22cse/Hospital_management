@@ -126,7 +126,7 @@ const addDoctorToPHC = async (req, res) => {
       phc.doctors.push(doctor._id);
       await phc.save();
     }
-
+    
     res
       .status(200)
       .json({ message: `Doctor ${doctor_name} added to PHC ${name}`, phc });
